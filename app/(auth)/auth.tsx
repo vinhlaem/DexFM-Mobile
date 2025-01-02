@@ -6,138 +6,209 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  ImageBackground,
 } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import * as LocalAuthentication from "expo-local-authentication";
 import { useRouter } from "expo-router";
+import IconFaceID from "@/assets/svgComponents/IconFaceID";
+import Button from "@/components/Button";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function AuthScreen() {
   const [passcode, setPasscode] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const backgroundImage = require("../../assets/images/background.jpeg");
 
-  // Kiểm tra và thực hiện xác thực sinh trắc học
-  const handleBiometricAuth = async () => {
+  // Xác thực bằng khuôn mặt
+  const handleFaceAuth = async () => {
     try {
-      // Kiểm tra xem thiết bị có hỗ trợ phần cứng sinh trắc học không
-      const hasBiometrics = await LocalAuthentication.hasHardwareAsync();
-      if (!hasBiometrics) {
-        Alert.alert("Thông báo", "Thiết bị không hỗ trợ phần cứng xác thực sinh trắc học.");
-        return;
-      }
-
-      // Kiểm tra xem người dùng đã kích hoạt sinh trắc học chưa
-      const biometricsEnabled = await LocalAuthentication.isEnrolledAsync();
-      if (!biometricsEnabled) {
-        Alert.alert("Thông báo", "Thiết bị chưa đăng ký vân tay hoặc khuôn mặt.");
-        return;
-      }
-
-      // Lấy danh sách các loại sinh trắc học hỗ trợ
       const supportedTypes = await LocalAuthentication.supportedAuthenticationTypesAsync();
-
-      // Đặt cấu hình xác thực
-      const authOptions = {
-        promptMessage: "Xác thực sinh trắc học",
-        cancelLabel: "Hủy",
-        fallbackLabel: "Sử dụng mật khẩu",
-      };
-
-      // Kiểm tra loại xác thực được hỗ trợ
-      if (supportedTypes.includes(LocalAuthentication.AuthenticationType.FINGERPRINT)) {
-        console.log("Sử dụng vân tay...");
-      } else if (supportedTypes.includes(LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION)) {
-        console.log("Sử dụng khuôn mặt...");
-      } else {
-        console.log("Fallback sang mật khẩu...");
+      if (!supportedTypes.includes(LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION)) {
+        Alert.alert("Notice", "Face ID is not supported on this device.");
+        return;
       }
-
-      // Thực hiện xác thực (vân tay, khuôn mặt, hoặc fallback)
-      const result = await LocalAuthentication.authenticateAsync(authOptions);
-
-      // Kiểm tra kết quả xác thực
+      const result = await LocalAuthentication.authenticateAsync({
+        promptMessage: "Face Authentication",
+        cancelLabel: "Cancel",
+        // fallbackLabel: "Use Passcode",
+      });
       if (result.success) {
-        Alert.alert("Thành công!", "Đăng nhập bằng sinh trắc học.");
-        router.replace("/(dashBoard)/home"); // Điều hướng đến màn hình tiếp theo
+        Alert.alert("Success!", "Authenticated using Face ID.");
+        router.replace("/(dashBoard)/home");
       } else {
-        Alert.alert("Lỗi", result.error || "Xác thực không thành công. Vui lòng thử lại.");
+        Alert.alert("Error", result.error || "Face authentication failed.");
       }
     } catch (error) {
-      console.error("Lỗi xác thực:", error);
-      Alert.alert("Lỗi", "Đã xảy ra lỗi trong quá trình xác thực. Vui lòng thử lại sau.");
+      console.error("Face Authentication Error:", error);
+      Alert.alert("Error", "An error occurred during Face ID authentication.");
     }
   };
 
+  // Xác thực bằng vân tay
+  const handleFingerprintAuth = async () => {
+    try {
+      const supportedTypes = await LocalAuthentication.supportedAuthenticationTypesAsync();
+      if (!supportedTypes.includes(LocalAuthentication.AuthenticationType.FINGERPRINT)) {
+        Alert.alert("Notice", "Fingerprint authentication is not supported on this device.");
+        return;
+      }
+      const result = await LocalAuthentication.authenticateAsync({
+        promptMessage: "Fingerprint Authentication",
+        cancelLabel: "Cancel",
+        // fallbackLabel: "",
+      });
+      if (result.success) {
+        Alert.alert("Success!", "Authenticated using fingerprint.");
+        router.replace("/(dashBoard)/home");
+      } else {
+        Alert.alert("Error", result.error || "Fingerprint authentication failed.");
+      }
+    } catch (error) {
+      console.error("Fingerprint Authentication Error:", error);
+      Alert.alert("Error", "An error occurred during fingerprint authentication.");
+    }
+  };
 
+  // Xác thực bằng mật khẩu máy
+  const handleDevicePassAuth = async () => {
+    try {
+      const result = await LocalAuthentication.authenticateAsync({
+        promptMessage: "Device Passcode Authentication",
+        cancelLabel: "Cancel",
+        // fallbackLabel: "Use Passcode",
+      });
+      if (result.success) {
+        Alert.alert("Success!", "Authenticated using device passcode.");
+        router.replace("/(dashBoard)/home");
+      } else {
+        Alert.alert("Error", result.error || "Device passcode authentication failed.");
+      }
+    } catch (error) {
+      console.error("Device Passcode Authentication Error:", error);
+      Alert.alert("Error", "An error occurred during device passcode authentication.");
+    }
+  };
+
+  // Xác thực bằng mật khẩu do người dùng tạo
   const handlePasscodeAuth = async () => {
     setLoading(true);
     try {
       const savedPasscode = await SecureStore.getItemAsync("passcode");
       if (savedPasscode === passcode) {
-        Alert.alert("Thành công!", "Đăng nhập thành công.");
+        Alert.alert("Success!", "Successfully logged in.");
         router.push("/(dashBoard)/home");
       } else {
-        Alert.alert("Lỗi", "Mật khẩu không đúng.");
+        Alert.alert("Error", "Incorrect passcode.");
       }
     } catch (error) {
-      Alert.alert("Lỗi", "Không thể xác thực. Vui lòng thử lại.");
+      Alert.alert("Error", "Unable to authenticate. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    handleBiometricAuth();
-  }, []);
+  
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Xác thực</Text>
+    <ImageBackground source={backgroundImage} style={styles.background}>
+      <View style={styles.container}>
+        <Text style={styles.title}>Authentication</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Nhập mật khẩu"
-        secureTextEntry
-        value={passcode}
-        onChangeText={setPasscode}
-      />
+        <TextInput
+          style={styles.input}
+          placeholder="Enter your passcode"
+          secureTextEntry
+          value={passcode}
+          onChangeText={setPasscode}
+          placeholderTextColor={'#cbcbcb'}
+        />
 
-      <TouchableOpacity style={styles.button} onPress={handlePasscodeAuth}>
-        <Text style={styles.buttonText}>
-          {loading ? "Đang xử lý..." : "Đăng nhập"}
-        </Text>
-      </TouchableOpacity>
+        <Button label={loading ? "Processing..." : "Login"} onPress={handlePasscodeAuth} containerStyles={{ width: "100%", marginVertical: 20 }} />
 
-      <TouchableOpacity
-        style={[styles.button, styles.secondaryButton]}
-        onPress={handleBiometricAuth}
-      >
-        <Text style={styles.buttonText}>Xác thực sinh trắc học</Text>
-      </TouchableOpacity>
-    </View>
+        <View style={styles.containerLine}>
+          <View style={styles.line} />
+          <Text style={styles.text}>or</Text>
+          <View style={styles.line} />
+        </View>
+
+        <View style={styles.biometricOptions}>
+          <TouchableOpacity style={styles.buttonBiometric} onPress={handleFaceAuth}>
+            <IconFaceID color="black" size={35} />
+            <Text style={styles.biometricText}>Face ID</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.buttonBiometric} onPress={handleFingerprintAuth}>
+            <Ionicons name="finger-print" size={32} color="black" />
+            <Text style={styles.biometricText}>Fingerprint</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.buttonBiometric} onPress={handleDevicePassAuth}>
+            <Ionicons name="lock-closed-outline" size={32} color="black" />
+            <Text style={styles.biometricText}>Device Pass</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", alignItems: "center", padding: 20 },
-  title: { fontSize: 24, fontWeight: "bold", marginBottom: 20 },
+  background: {
+    flex: 1,
+    resizeMode: "cover",
+    justifyContent: "center",
+  },
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+    // backgroundColor: "rgba(0, 0, 0, 0.05)",
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 50,
+    color: "black",
+  },
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
+    // borderColor: "#ccc",
     borderRadius: 8,
-    padding: 10,
+    padding: 15,
     width: "100%",
     marginBottom: 20,
+    backgroundColor: "rgba(0, 0, 0, 0.3)",
+    color: 'white',
   },
-  button: {
-    backgroundColor: "#4CAF50",
-    padding: 15,
-    borderRadius: 8,
+  containerLine: {
+    flexDirection: "row",
     alignItems: "center",
-    marginBottom: 10,
+    marginVertical: 20,
+    width: "70%",
   },
-  secondaryButton: {
-    backgroundColor: "#2196F3",
+  line: {
+    flex: 1,
+    height: 1,
+    backgroundColor: "#393939",
+    marginHorizontal: 10,
   },
-  buttonText: { color: "#fff", fontSize: 16 },
+  text: {
+    fontSize: 16,
+    color: "#333",
+  },
+  biometricOptions: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    width: "100%",
+  },
+  buttonBiometric: {
+    alignItems: "center",
+    width: '30%'
+  },
+  biometricText: {
+    color: "black",
+    marginTop: 5,
+    fontSize: 13
+  },
 });
