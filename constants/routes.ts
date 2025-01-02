@@ -22,6 +22,8 @@ export interface Routes {
   accountModal: string;
   accountNameModal: string;
   confirmation: string;
+  dashBoard: string;
+  detailToken: string;
 }
 
 export const ROUTES: Routes = {
@@ -48,4 +50,6 @@ export const ROUTES: Routes = {
   accountModal: "/(app)/accounts/account-modal",
   accountNameModal: "/(app)/accounts/account-name-modal",
   confirmation: "/(app)/token/confirmation",
+  dashBoard: "(dashBoard)",
+  detailToken: '(detailToken)',
 };

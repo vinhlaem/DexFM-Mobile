@@ -11,7 +11,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { ThemedText } from "@/components/ThemedText";
 import Logo from "../assets/images/logo.svg";
 import { IconSymbol } from "@/components/ui/IconSymbol";
-import { useCallback, useState } from "react";
+import { useEffect, useState } from "react";
 import { RootState } from "@/store";
 import { useDispatch, useSelector } from "react-redux";
 import ethService from "@/services/ether";
@@ -29,6 +29,7 @@ import { getPhrase } from "@/hooks/useStorageState";
 import { useRouter } from "expo-router";
 import { ROUTES } from "@/constants/routes";
 import React from "react";
+import * as SecureStore from "expo-secure-store";
 
 const OnBoarding = () => {
   //   if (!loading && isLogged) return <Redirect href="/home" />;
@@ -38,6 +39,26 @@ const OnBoarding = () => {
 
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const checkAccount = async () => {
+      try {
+        const mnemonic = await SecureStore.getItemAsync("mnemonic");
+        if (mnemonic) {
+          setTimeout(() => {
+            router.replace("/(auth)/auth");
+          }, 500);
+        } else {
+        }
+      } catch (error) {
+        console.error("Lỗi khi kiểm tra tài khoản:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAccount();
+  }, []);
 
   const walletSetup = async () => {
     try {

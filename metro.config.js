@@ -1,5 +1,8 @@
 const { getDefaultConfig } = require("expo/metro-config");
 const path = require("path");
+const {
+  wrapWithReanimatedMetroConfig,
+} = require('react-native-reanimated/metro-config');
 
 const defaultConfig = getDefaultConfig(__dirname);
 
@@ -20,4 +23,4 @@ defaultConfig.resolver.extraNodeModules = {
   events: path.resolve(__dirname, "node_modules/events"),
   "readable-stream": path.resolve(__dirname, "node_modules/readable-stream"),
 };
-module.exports = defaultConfig;
+module.exports = wrapWithReanimatedMetroConfig(defaultConfig);
