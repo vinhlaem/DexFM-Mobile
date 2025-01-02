@@ -12,27 +12,17 @@ import { ThemedText } from "@/components/ThemedText";
 import Logo from "../assets/images/logo.svg";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import { useEffect, useState } from "react";
-import { RootState } from "@/store";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import ethService from "@/services/ether";
 import solanaService from "@/services/solana";
 import { AddressState, GeneralStatus } from "@/types/types";
-import {
-  saveEthereumAddresses,
-  updateEthereumAddresses,
-} from "@/store/ethereumSlice";
-import {
-  saveSolanaAddresses,
-  updateSolanaAddresses,
-} from "@/store/solanaSlice";
+import { saveEthereumAddresses } from "@/store/ethereumSlice";
+import { saveSolanaAddresses } from "@/store/solanaSlice";
 import { getPhrase } from "@/hooks/useStorageState";
 import { useRouter } from "expo-router";
-import { ROUTES } from "@/constants/routes";
 import React from "react";
-import * as SecureStore from "expo-secure-store";
 
 const OnBoarding = () => {
-  //   if (!loading && isLogged) return <Redirect href="/home" />;
   const image = require("../assets/images/background.jpeg");
 
   const router = useRouter();
@@ -43,15 +33,14 @@ const OnBoarding = () => {
   useEffect(() => {
     const checkAccount = async () => {
       try {
-        const mnemonic = await SecureStore.getItemAsync("mnemonic");
-        if (mnemonic) {
+        const phare = await getPhrase();
+        if (phare) {
           setTimeout(() => {
             router.replace("/(auth)/auth");
           }, 500);
-        } else {
         }
       } catch (error) {
-        console.error("Lỗi khi kiểm tra tài khoản:", error);
+        console.error("Error when check account", error);
       } finally {
         setLoading(false);
       }
@@ -117,7 +106,7 @@ const OnBoarding = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <ImageBackground
         source={image}
         resizeMode="cover"
@@ -163,9 +152,7 @@ const OnBoarding = () => {
           </View>
         </View>
       </ImageBackground>
-
-      <StatusBar style="dark" />
-    </SafeAreaView>
+    </View>
   );
 };
 

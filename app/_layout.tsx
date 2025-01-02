@@ -19,7 +19,7 @@ import { ROUTES } from "@/constants/routes";
 import { Provider } from "react-redux";
 import { store } from "@/store";
 
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -47,10 +47,12 @@ export default function RootLayout() {
   return (
     <Provider store={store}>
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+        <ThemeProvider
+          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+        >
           <Stack
             screenOptions={{
-              headerShown: false
+              headerShown: false,
             }}
           >
             <Stack.Screen name="index" options={{ headerShown: false }} />
@@ -98,13 +100,19 @@ export default function RootLayout() {
               }}
             />
             <Stack.Screen
+              name={ROUTES.auth}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
               name={ROUTES.detailToken}
               options={{
                 headerShown: false,
               }}
             />
           </Stack>
-          <StatusBar style="dark" />
+          <StatusBar style="auto" />
         </ThemeProvider>
       </GestureHandlerRootView>
     </Provider>

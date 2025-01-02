@@ -12,11 +12,15 @@ import * as SecureStore from "expo-secure-store";
 import {
   Alert,
   ImageBackground,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
   SafeAreaView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { View } from "react-native";
 import { Formik } from "formik";
@@ -48,158 +52,107 @@ export default function WalletSetup() {
     try {
       await SecureStore.setItemAsync("passcode", passcode);
       Alert.alert("Thành công!", "Mật khẩu đã được lưu.");
-      router.push("/(dashBoard)/home"); // Điều hướng về màn hình chính
+      router.push("/(wallet)/setup/wallet-created-successfully");
     } catch (error) {
       Alert.alert("Lỗi", "Không thể lưu mật khẩu.");
     }
   };
 
-  const walletSetup = async () => {
-    setLoading(true);
-    try {
-      const ethWallet = await ethService.createWallet();
-
-      const masterMnemonicPhrase = ethWallet.mnemonic?.phrase;
-
-      if (!masterMnemonicPhrase) {
-        throw new Error("Mnemonic is null or undefined");
-      }
-
-      const solWallet = await solanaService.restoreWalletFromPhrase(
-        masterMnemonicPhrase
-      );
-
-      const ethereumAccount: AddressState = {
-        accountName: "Account 1",
-        derivationPath: `m/44'/60'/0'/0/0`,
-        address: ethWallet.address,
-        publicKey: ethWallet.publicKey,
-        balance: 0,
-        transactionMetadata: {
-          paginationKey: undefined,
-          transactions: [],
-        },
-        failedNetworkRequest: false,
-        status: GeneralStatus.Idle,
-        transactionConfirmations: [],
-      };
-
-      const solanaAccount: AddressState = {
-        accountName: "Account 1",
-        derivationPath: `m/44'/501'/0'/0'`,
-        address: solWallet.publicKey.toBase58(),
-        publicKey: solWallet.publicKey.toBase58(),
-        balance: 0,
-        transactionMetadata: {
-          paginationKey: undefined,
-          transactions: [],
-        },
-        failedNetworkRequest: false,
-        status: GeneralStatus.Idle,
-        transactionConfirmations: [],
-      };
-
-      dispatch(saveEthereumAddresses([ethereumAccount]));
-      dispatch(saveSolanaAddresses([solanaAccount]));
-
-      router.push({
-        pathname: "/(wallet)/seed/seed-phrase",
-        params: { phrase: masterMnemonicPhrase },
-      });
-    } catch (err) {
-      console.error("Failed to create wallet", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const [inputValue, setInputValue] = useState("");
-
   return (
-    <SafeAreaView>
-      <ImageBackground
-        source={image}
-        resizeMode="cover"
-        style={styles.imageBackground}
+    <View>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        <View style={styles.container}>
-          <View style={styles.containerText}>
-            <Text style={styles.textPassword}>Create Password</Text>
-            <Text style={styles.textDescription}>
-              This password allows you to lock your extension and create another
-              secure layer for your wallet
-            </Text>
-          </View>
-          <View style={styles.containerInput}>
-            <Formik
-              initialValues={{ password: "", confirmPassword: "" }}
-              validationSchema={validationSchema}
-              onSubmit={(values) => {
-                console.log("Submitted values:", values);
-                // alert("Password is valid!");
-                savePasscode(values.password);
-              }}
-            >
-              {({
-                handleChange,
-                handleBlur,
-                handleSubmit,
-                values,
-                errors,
-                touched,
-              }) => (
-                <View style={styles.containerForm}>
-                  <View>
-                    <Text style={styles.label}>Password</Text>
-                    <TextInput
-                      style={styles.input}
-                      placeholder="Password"
-                      placeholderTextColor="#568373"
-                      secureTextEntry
-                      onChangeText={handleChange("password")}
-                      onBlur={handleBlur("password")}
-                      value={values.password}
-                    />
-                    {touched.password && errors.password && (
-                      <Text style={styles.errorText}>{errors.password}</Text>
-                    )}
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <ImageBackground
+            source={image}
+            resizeMode="cover"
+            style={styles.imageBackground}
+          >
+            <View style={styles.container}>
+              <View style={styles.containerText}>
+                <Text style={styles.textPassword}>Create Password</Text>
+                <Text style={styles.textDescription}>
+                  This password allows you to lock your extension and create
+                  another secure layer for your wallet
+                </Text>
+              </View>
+              <View style={styles.containerInput}>
+                <Formik
+                  initialValues={{ password: "", confirmPassword: "" }}
+                  validationSchema={validationSchema}
+                  onSubmit={(values) => {
+                    console.log("Submitted values:", values);
+                    // alert("Password is valid!");
+                    savePasscode(values.password);
+                  }}
+                >
+                  {({
+                    handleChange,
+                    handleBlur,
+                    handleSubmit,
+                    values,
+                    errors,
+                    touched,
+                  }) => (
+                    <View style={styles.containerForm}>
+                      <View>
+                        <Text style={styles.label}>Password</Text>
+                        <TextInput
+                          style={styles.input}
+                          placeholder="Password"
+                          placeholderTextColor="#568373"
+                          secureTextEntry
+                          onChangeText={handleChange("password")}
+                          onBlur={handleBlur("password")}
+                          value={values.password}
+                        />
+                        {touched.password && errors.password && (
+                          <Text style={styles.errorText}>
+                            {errors.password}
+                          </Text>
+                        )}
 
-                    <Text style={styles.label}>Confirm Password</Text>
-                    <TextInput
-                      style={styles.input}
-                      placeholder="Confirm Password"
-                      placeholderTextColor="#568373"
-                      secureTextEntry
-                      onChangeText={handleChange("confirmPassword")}
-                      onBlur={handleBlur("confirmPassword")}
-                      value={values.confirmPassword}
-                    />
-                    {touched.confirmPassword && errors.confirmPassword && (
-                      <Text style={styles.errorText}>
-                        {errors.confirmPassword}
-                      </Text>
-                    )}
-                  </View>
+                        <Text style={styles.label}>Confirm Password</Text>
+                        <TextInput
+                          style={styles.input}
+                          placeholder="Confirm Password"
+                          placeholderTextColor="#568373"
+                          secureTextEntry
+                          onChangeText={handleChange("confirmPassword")}
+                          onBlur={handleBlur("confirmPassword")}
+                          value={values.confirmPassword}
+                        />
+                        {touched.confirmPassword && errors.confirmPassword && (
+                          <Text style={styles.errorText}>
+                            {errors.confirmPassword}
+                          </Text>
+                        )}
+                      </View>
 
-                  <TouchableOpacity
-                    style={styles.button}
-                    onPress={() => handleSubmit()}
-                  >
-                    <Text style={styles.buttonText}>Create account</Text>
-                  </TouchableOpacity>
-                </View>
-              )}
-            </Formik>
-          </View>
-        </View>
-      </ImageBackground>
-    </SafeAreaView>
+                      <TouchableOpacity
+                        style={styles.button}
+                        onPress={() => handleSubmit()}
+                      >
+                        <Text style={styles.buttonText}>Create account</Text>
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                </Formik>
+              </View>
+            </View>
+          </ImageBackground>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     // padding: 10,
+    marginTop: 50,
+    flex: 1,
   },
   imageBackground: {
     // flex: 1,

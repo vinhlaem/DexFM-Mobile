@@ -55,7 +55,7 @@ const ConfirmSeedPhrase = () => {
         throw e;
       }
       router.push({
-        pathname: `/(wallet)/setup/wallet-created-successfully`,
+        pathname: `/(wallet)/setup/wallet`,
         params: { successState: "CREATED_WALLET" },
       });
     } else {
@@ -75,14 +75,14 @@ const ConfirmSeedPhrase = () => {
   };
 
   return (
-    <SafeAreaView style={styles.SafeAreaContainer}>
+    <View style={styles.SafeAreaContainer}>
       <ImageBackground
         source={images.image}
         resizeMode="cover"
         style={styles.imageBackground}
       >
         <View>
-          <ScrollView contentContainerStyle={{ paddingTop: 20 }}>
+          <ScrollView contentContainerStyle={{ paddingTop: 50 }}>
             <View style={styles.ContentContainer}>
               <View style={styles.TextContainer}>
                 <View
@@ -152,7 +152,7 @@ const ConfirmSeedPhrase = () => {
           </TouchableOpacity>
         </View>
       </ImageBackground>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -161,7 +161,7 @@ export default ConfirmSeedPhrase;
 const styles = StyleSheet.create({
   SafeAreaContainer: {
     flex: 1,
-    backgroundColor: "#fff",
+    // backgroundColor: "#fff",
     justifyContent: "center",
     alignItems: "center",
     width: "100%",
@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
   ContentContainer: {
     flex: 1,
     justifyContent: "center",
-    padding: 10,
+    padding: 25,
   },
   TextContainer: {
     marginBottom: 10,
@@ -250,7 +250,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     width: "100%",
-    paddingLeft: 10,
-    paddingRight: 10,
+    paddingLeft: 25,
+    paddingRight: 25,
   },
 });

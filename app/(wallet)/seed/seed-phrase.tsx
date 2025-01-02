@@ -15,6 +15,7 @@ import { getPhrase } from "@/hooks/useStorageState";
 import { ROUTES } from "@/constants/routes";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import images from "@/constants/images";
+import { StatusBar } from "expo-status-bar";
 
 const SeedPhare = () => {
   const { phrase, readOnly } = useLocalSearchParams();
@@ -47,13 +48,13 @@ const SeedPhare = () => {
   }, [readOnly]);
 
   return (
-    <SafeAreaView style={styles.SafeAreaContainer}>
+    <View style={styles.SafeAreaContainer}>
       <ImageBackground
         source={images.image}
         resizeMode="cover"
         //   style={styles.imageBackground}
       >
-        <ScrollView contentContainerStyle={{ paddingTop: 20 }}>
+        <ScrollView contentContainerStyle={{ paddingTop: 50 }}>
           <View style={styles.ContentContainer}>
             <View style={styles.TextContainer}>
               <View
@@ -104,7 +105,7 @@ const SeedPhare = () => {
           )}
         </View>
       </ImageBackground>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -113,8 +114,7 @@ export default SeedPhare;
 const styles = StyleSheet.create({
   SafeAreaContainer: {
     flex: 1,
-    backgroundColor: "#fff",
-    justifyContent: "center",
+    justifyContent: "space-between",
     alignItems: "center",
   },
 
@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     gap: 20,
-    marginTop: 20,
+    marginTop: 50,
     // marginRight: 10,
     // marginLeft: 10,
   },
@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     paddingRight: 20,
     height: 40,
-    marginTop: 10,
+    marginTop: 20,
     backgroundColor: "#fff",
     width: "50%",
     borderRadius: 50,

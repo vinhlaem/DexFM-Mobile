@@ -15,17 +15,21 @@ import IconFaceID from "@/assets/svgComponents/IconFaceID";
 import Button from "@/components/Button";
 import { Ionicons } from "@expo/vector-icons";
 
-export default function AuthScreen() {
+const Auth = () => {
   const [passcode, setPasscode] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const backgroundImage = require("../../assets/images/background.jpeg");
 
-  // Xác thực bằng khuôn mặt
   const handleFaceAuth = async () => {
     try {
-      const supportedTypes = await LocalAuthentication.supportedAuthenticationTypesAsync();
-      if (!supportedTypes.includes(LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION)) {
+      const supportedTypes =
+        await LocalAuthentication.supportedAuthenticationTypesAsync();
+      if (
+        !supportedTypes.includes(
+          LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION
+        )
+      ) {
         Alert.alert("Notice", "Face ID is not supported on this device.");
         return;
       }
@@ -49,9 +53,17 @@ export default function AuthScreen() {
   // Xác thực bằng vân tay
   const handleFingerprintAuth = async () => {
     try {
-      const supportedTypes = await LocalAuthentication.supportedAuthenticationTypesAsync();
-      if (!supportedTypes.includes(LocalAuthentication.AuthenticationType.FINGERPRINT)) {
-        Alert.alert("Notice", "Fingerprint authentication is not supported on this device.");
+      const supportedTypes =
+        await LocalAuthentication.supportedAuthenticationTypesAsync();
+      if (
+        !supportedTypes.includes(
+          LocalAuthentication.AuthenticationType.FINGERPRINT
+        )
+      ) {
+        Alert.alert(
+          "Notice",
+          "Fingerprint authentication is not supported on this device."
+        );
         return;
       }
       const result = await LocalAuthentication.authenticateAsync({
@@ -63,11 +75,17 @@ export default function AuthScreen() {
         Alert.alert("Success!", "Authenticated using fingerprint.");
         router.replace("/(dashBoard)/home");
       } else {
-        Alert.alert("Error", result.error || "Fingerprint authentication failed.");
+        Alert.alert(
+          "Error",
+          result.error || "Fingerprint authentication failed."
+        );
       }
     } catch (error) {
       console.error("Fingerprint Authentication Error:", error);
-      Alert.alert("Error", "An error occurred during fingerprint authentication.");
+      Alert.alert(
+        "Error",
+        "An error occurred during fingerprint authentication."
+      );
     }
   };
 
@@ -83,11 +101,17 @@ export default function AuthScreen() {
         Alert.alert("Success!", "Authenticated using device passcode.");
         router.replace("/(dashBoard)/home");
       } else {
-        Alert.alert("Error", result.error || "Device passcode authentication failed.");
+        Alert.alert(
+          "Error",
+          result.error || "Device passcode authentication failed."
+        );
       }
     } catch (error) {
       console.error("Device Passcode Authentication Error:", error);
-      Alert.alert("Error", "An error occurred during device passcode authentication.");
+      Alert.alert(
+        "Error",
+        "An error occurred during device passcode authentication."
+      );
     }
   };
 
@@ -109,8 +133,6 @@ export default function AuthScreen() {
     }
   };
 
-  
-
   return (
     <ImageBackground source={backgroundImage} style={styles.background}>
       <View style={styles.container}>
@@ -122,10 +144,14 @@ export default function AuthScreen() {
           secureTextEntry
           value={passcode}
           onChangeText={setPasscode}
-          placeholderTextColor={'#cbcbcb'}
+          placeholderTextColor={"#cbcbcb"}
         />
 
-        <Button label={loading ? "Processing..." : "Login"} onPress={handlePasscodeAuth} containerStyles={{ width: "100%", marginVertical: 20 }} />
+        <Button
+          label={loading ? "Processing..." : "Login"}
+          onPress={handlePasscodeAuth}
+          containerStyles={{ width: "100%", marginVertical: 20 }}
+        />
 
         <View style={styles.containerLine}>
           <View style={styles.line} />
@@ -134,15 +160,24 @@ export default function AuthScreen() {
         </View>
 
         <View style={styles.biometricOptions}>
-          <TouchableOpacity style={styles.buttonBiometric} onPress={handleFaceAuth}>
+          <TouchableOpacity
+            style={styles.buttonBiometric}
+            onPress={handleFaceAuth}
+          >
             <IconFaceID color="black" size={35} />
             <Text style={styles.biometricText}>Face ID</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonBiometric} onPress={handleFingerprintAuth}>
+          <TouchableOpacity
+            style={styles.buttonBiometric}
+            onPress={handleFingerprintAuth}
+          >
             <Ionicons name="finger-print" size={32} color="black" />
             <Text style={styles.biometricText}>Fingerprint</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonBiometric} onPress={handleDevicePassAuth}>
+          <TouchableOpacity
+            style={styles.buttonBiometric}
+            onPress={handleDevicePassAuth}
+          >
             <Ionicons name="lock-closed-outline" size={32} color="black" />
             <Text style={styles.biometricText}>Device Pass</Text>
           </TouchableOpacity>
@@ -150,7 +185,9 @@ export default function AuthScreen() {
       </View>
     </ImageBackground>
   );
-}
+};
+
+export default Auth;
 
 const styles = StyleSheet.create({
   background: {
@@ -179,7 +216,7 @@ const styles = StyleSheet.create({
     width: "100%",
     marginBottom: 20,
     backgroundColor: "rgba(0, 0, 0, 0.3)",
-    color: 'white',
+    color: "white",
   },
   containerLine: {
     flexDirection: "row",
@@ -204,11 +241,11 @@ const styles = StyleSheet.create({
   },
   buttonBiometric: {
     alignItems: "center",
-    width: '30%'
+    width: "30%",
   },
   biometricText: {
     color: "black",
     marginTop: 5,
-    fontSize: 13
+    fontSize: 13,
   },
 });

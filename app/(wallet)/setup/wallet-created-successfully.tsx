@@ -29,7 +29,7 @@ const walletCreatedSuccessfully = () => {
     }
   }, [successState]);
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <ImageBackground
         source={images.image}
         resizeMode="cover"
@@ -46,15 +46,16 @@ const walletCreatedSuccessfully = () => {
             </ThemedText>
           </View>
           <View style={styles.containerViewButton}>
-            <TouchableOpacity style={styles.buttonHome}
-              onPress={() => router.push('/(wallet)/setup/wallet')}
+            <TouchableOpacity
+              style={styles.buttonHome}
+              onPress={() => router.push("/(dashBoard)/home")}
             >
               <Text style={styles.textHome}>Go to home</Text>
             </TouchableOpacity>
           </View>
         </View>
       </ImageBackground>
-    </SafeAreaView>
+    </View>
   );
 };
 

@@ -1,5 +1,6 @@
 export interface Routes {
   home: string;
+  auth: string;
   walletSetup: string;
   walletCreatedSuccessfully: string;
   walletImportOptions: string;
@@ -28,6 +29,7 @@ export interface Routes {
 
 export const ROUTES: Routes = {
   home: "/(home)/home",
+  auth: "(auth)/auth",
   walletSetup: "(wallet)/setup/wallet",
   walletCreatedSuccessfully: "(wallet)/setup/wallet-created-successfully",
   walletImportOptions: "(wallet)/setup/wallet-import-options",
@@ -51,5 +53,5 @@ export const ROUTES: Routes = {
   accountNameModal: "/(app)/accounts/account-name-modal",
   confirmation: "/(app)/token/confirmation",
   dashBoard: "(dashBoard)",
-  detailToken: '(detailToken)',
+  detailToken: "(detailToken)",
 };
