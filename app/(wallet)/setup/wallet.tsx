@@ -7,7 +7,10 @@ import { AddressState, GeneralStatus } from "@/types/types";
 import { saveEthereumAddresses } from "@/store/ethereumSlice";
 import { saveSolanaAddresses } from "@/store/solanaSlice";
 import { ROUTES } from "@/constants/routes";
+import * as SecureStore from "expo-secure-store";
+
 import {
+  Alert,
   ImageBackground,
   SafeAreaView,
   StyleSheet,
@@ -40,6 +43,16 @@ export default function WalletSetup() {
   const [loading, setLoading] = useState(false);
 
   const router = useRouter();
+
+  const savePasscode = async (passcode: string) => {
+    try {
+      await SecureStore.setItemAsync("passcode", passcode);
+      Alert.alert("Thành công!", "Mật khẩu đã được lưu.");
+      router.push("/(dashBoard)/home"); // Điều hướng về màn hình chính
+    } catch (error) {
+      Alert.alert("Lỗi", "Không thể lưu mật khẩu.");
+    }
+  };
 
   const walletSetup = async () => {
     setLoading(true);
@@ -123,7 +136,8 @@ export default function WalletSetup() {
               validationSchema={validationSchema}
               onSubmit={(values) => {
                 console.log("Submitted values:", values);
-                alert("Password is valid!");
+                // alert("Password is valid!");
+                savePasscode(values.password);
               }}
             >
               {({

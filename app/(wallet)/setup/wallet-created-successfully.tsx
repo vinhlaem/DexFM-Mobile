@@ -46,7 +46,9 @@ const walletCreatedSuccessfully = () => {
             </ThemedText>
           </View>
           <View style={styles.containerViewButton}>
-            <TouchableOpacity style={styles.buttonHome}>
+            <TouchableOpacity style={styles.buttonHome}
+              onPress={() => router.push('/(wallet)/setup/wallet')}
+            >
               <Text style={styles.textHome}>Go to home</Text>
             </TouchableOpacity>
           </View>

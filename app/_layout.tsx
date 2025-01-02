@@ -19,6 +19,8 @@ import { ROUTES } from "@/constants/routes";
 import { Provider } from "react-redux";
 import { store } from "@/store";
 
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
@@ -44,55 +46,67 @@ export default function RootLayout() {
 
   return (
     <Provider store={store}>
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen
-            name={ROUTES.walletSetup}
-            options={{
-              headerShown: false,
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+          <Stack
+            screenOptions={{
+              headerShown: false
             }}
-          />
+          >
+            <Stack.Screen name="index" options={{ headerShown: false }} />
+            <Stack.Screen
+              name={ROUTES.walletSetup}
+              options={{
+                headerShown: false,
+              }}
+            />
 
-          <Stack.Screen
-            name={ROUTES.seedPhrase}
-            options={{
-              headerShown: false,
-            }}
-          />
-          <Stack.Screen
-            name={ROUTES.confirmSeedPhrase}
-            options={{
-              headerShown: false,
-            }}
-          />
-          <Stack.Screen
-            name={ROUTES.walletCreatedSuccessfully}
-            options={{
-              headerShown: false,
-            }}
-          />
-          <Stack.Screen
-            name={ROUTES.walletImportOptions}
-            options={{
-              headerShown: false,
-            }}
-          />
-          <Stack.Screen
-            name={ROUTES.walletImportSeedPhrase}
-            options={{
-              headerShown: false,
-            }}
-          />
-          <Stack.Screen
-            name={ROUTES.home}
-            options={{
-              headerShown: false,
-            }}
-          />
-        </Stack>
-        <StatusBar style="dark" />
-      </ThemeProvider>
+            <Stack.Screen
+              name={ROUTES.seedPhrase}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name={ROUTES.confirmSeedPhrase}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name={ROUTES.walletCreatedSuccessfully}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name={ROUTES.walletImportOptions}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name={ROUTES.walletImportSeedPhrase}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name={ROUTES.dashBoard}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name={ROUTES.detailToken}
+              options={{
+                headerShown: false,
+              }}
+            />
+          </Stack>
+          <StatusBar style="dark" />
+        </ThemeProvider>
+      </GestureHandlerRootView>
     </Provider>
   );
 }
