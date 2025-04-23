@@ -1,0 +1,190 @@
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+  SafeAreaView,
+} from "react-native";
+import React, { useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
+import HeaderPage from "@/components/ui/HeaderPage";
+
+const Recovery = () => {
+  const [isChecked, setIsChecked] = useState(false);
+
+
+  const TEXTWARNING = [
+    {
+      title: "Your Recovery Phrase will provide access to this account. Think of it as a login and password combined into one.",
+      icon: "key-outline",
+    },
+    {
+      title: "Anyone who has this Recovery Phrase will have full access to any funds contained in this account. Your funds may be lost.",
+      icon: "alert-circle-outline",
+    },
+    {
+      title: "Do not share your Recovery Phrase with any 3rd party, person, website or application.",
+      icon: "lock-closed-outline",
+    },
+  ]
+
+  
+
+  return (
+    <SafeAreaView style={styles.container}>
+        {/* Header */}
+     <View style={{ paddingHorizontal: 20 }}>
+          <HeaderPage title="Show Recovery Phrase" />
+  
+     </View>
+        {/* Icon */}
+        
+        <View style={styles.iconContainer}>
+        <Ionicons
+          name="warning"
+          color="#FF5555"
+          size={70}
+        />
+      </View>
+        {/* Title */}
+        <Text style={styles.title}>Keep Your Recovery Phrase Secret</Text>
+
+        {/* Warning Items */}
+        <View style={styles.warningContainer}>
+          {TEXTWARNING.map((item, index) => (
+            <View style={styles.warningItem} key={index}>
+              <Ionicons
+                name={item.icon as any}
+                size={24}
+                color="#FF5555"
+                style={styles.warningIcon}
+            />
+            <Text style={styles.warningText}>
+              {item.title}
+            </Text>
+            </View>
+          ))}
+
+         
+        </View>
+
+        {/* Spacer to push checkbox to bottom */}
+        <View style={styles.spacer} />
+
+        {/* Checkbox and Text */}
+        <View style={styles.checkboxContainer}>
+          <TouchableOpacity onPress={() => setIsChecked(!isChecked)}>
+            <Ionicons
+              name={isChecked ? "checkbox-outline" : "square-outline"}
+              size={24}
+              color={isChecked ? "#00A3FF" : "#000"}
+            />
+          </TouchableOpacity>
+          <Text style={styles.checkboxText}>
+            I will not share my Recovery Phrase with any 3rd party, person,
+            website or application.
+          </Text>
+        </View>
+
+        {/* Continue Button */}
+        <TouchableOpacity
+          style={[styles.button, !isChecked && styles.buttonDisabled]}
+          disabled={!isChecked}
+          onPress={() => router.push("/(recovery)/seed-phrase-recovery")}
+        >
+          <Text style={styles.buttonText}>Continue</Text>
+        </TouchableOpacity>
+    </SafeAreaView>
+  );
+};
+
+export default Recovery;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+ 
+  },
+
+  iconContainer: {
+    alignItems: "center",
+    marginVertical: 20,
+    marginTop: 50,
+
+  },
+  icon: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+  },
+  title: {
+    color: "#000",
+    fontSize: 24,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 20,
+    paddingHorizontal: 5,
+    
+
+  },
+  warningContainer: {
+    marginBottom: 20,
+    paddingHorizontal: 20,
+
+  },
+  warningItem: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    marginBottom: 15,
+  },
+  warningIcon: {
+    marginRight: 10,
+  },
+  warningText: {
+    color: "#000",
+    fontSize: 15,
+    flex: 1,
+    fontWeight: "500",
+  },
+  spacer: {
+    flex: 1,
+    
+  },
+  checkboxContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
+    paddingHorizontal: 20,
+
+  },
+  checkboxText: {
+    color: "#000",
+    fontSize: 15,
+    flex: 1,
+    marginLeft: 10,
+    fontWeight: "500",
+  },
+  button: {
+    paddingVertical: 15,
+    alignItems: "center",
+    backgroundColor: "#000",
+    borderRadius: 50,
+    shadowColor: "rgba(43, 45, 51)",
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.2,
+    shadowRadius: 24,
+    elevation: 5,
+    marginHorizontal: 20,
+  },
+  buttonDisabled: {
+    backgroundColor: "#666",
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+});

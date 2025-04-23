@@ -40,6 +40,8 @@ export default function DashBoardLayout() {
         []
     );
 
+    
+
     return (
         <Tabs
             screenOptions={{

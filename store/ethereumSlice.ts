@@ -32,6 +32,7 @@ const initialState: WalletState = {
         paginationKey: undefined,
         transactions: [],
       },
+      type: "",
     },
   ],
 };

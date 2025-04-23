@@ -11,7 +11,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { ThemedText } from "@/components/ThemedText";
 import Logo from "../assets/images/logo.svg";
 import { IconSymbol } from "@/components/ui/IconSymbol";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import ethService from "@/services/ether";
 import solanaService from "@/services/solana";
@@ -19,7 +19,7 @@ import { AddressState, GeneralStatus } from "@/types/types";
 import { saveEthereumAddresses } from "@/store/ethereumSlice";
 import { saveSolanaAddresses } from "@/store/solanaSlice";
 import { getPhrase } from "@/hooks/useStorageState";
-import { useRouter } from "expo-router";
+import { SplashScreen, useRouter } from "expo-router";
 import React from "react";
 
 const OnBoarding = () => {
@@ -27,27 +27,28 @@ const OnBoarding = () => {
 
   const router = useRouter();
 
+
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
 
+
+
   useEffect(() => {
-    const checkAccount = async () => {
+    async function prepare() {
       try {
-        const phare = await getPhrase();
-        if (phare) {
-          setTimeout(() => {
-            router.replace("/(auth)/auth");
-          }, 500);
+
+        const phrase = await getPhrase();
+        if (phrase) {
+          router.replace("/(auth)/auth");
         }
       } catch (error) {
         console.error("Error when check account", error);
-      } finally {
-        setLoading(false);
       }
-    };
+    }
 
-    checkAccount();
+    prepare();
   }, []);
+
 
   const walletSetup = async () => {
     try {
@@ -62,7 +63,7 @@ const OnBoarding = () => {
       );
 
       const ethereumAccount: AddressState = {
-        accountName: "Account 1",
+        accountName: "Ethereum Account 1",
         derivationPath: `m/44'/60'/0'/0/0`,
         address: ethWallet.address,
         publicKey: ethWallet.publicKey,
@@ -74,10 +75,11 @@ const OnBoarding = () => {
         failedNetworkRequest: false,
         status: GeneralStatus.Idle,
         transactionConfirmations: [],
+        type: "ethereum",
       };
 
       const solanaAccount: AddressState = {
-        accountName: "Account 1",
+        accountName: "Solana Account 1",
         derivationPath: `m/44'/501'/0'/0'`,
         address: solWallet.publicKey.toBase58(),
         publicKey: solWallet.publicKey.toBase58(),
@@ -89,6 +91,7 @@ const OnBoarding = () => {
         failedNetworkRequest: false,
         status: GeneralStatus.Idle,
         transactionConfirmations: [],
+        type: "solana",
       };
 
       dispatch(saveEthereumAddresses([ethereumAccount]));
@@ -106,7 +109,7 @@ const OnBoarding = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} >
       <ImageBackground
         source={image}
         resizeMode="cover"

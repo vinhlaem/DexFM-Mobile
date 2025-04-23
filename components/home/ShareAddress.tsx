@@ -10,18 +10,6 @@ import ButtonHome from '../Button';
 import IconQRCode from '@/assets/svgComponents/IconQRCode';
 import * as Clipboard from "expo-clipboard";
 
-const formatAddress = (address: string) => {
-    const firstPart = address.slice(0, 4);
-    const lastPart = address.slice(-4);
-    const middlePart = address.slice(4, -4);
-
-    return (
-        <Text>
-            <Text style={styles.bold}>{firstPart}</Text>{middlePart}<Text style={styles.bold}>{lastPart}</Text>
-        </Text>
-    );
-};
-
 const ShareAddress: React.FC = () => {
     const ethereumAccounts = useSelector((state: RootState) => state.ethereum.addresses);
     const solanaAccounts = useSelector((state: RootState) => state.solana.addresses);
@@ -30,7 +18,7 @@ const ShareAddress: React.FC = () => {
 
     const handleCopy = async () => {
         await Clipboard.setStringAsync(selectedOption.address);
-        alert('Địa chỉ đã được sao chép vào clipboard!');
+        alert('Copied')
     };
 
     return (
@@ -41,17 +29,17 @@ const ShareAddress: React.FC = () => {
                 setSelectedOption={setSelectedOption}
                 containerStyle={{ marginVertical: 20 }}
             />
-            <CustomQRCode
+            {selectedOption.address && <CustomQRCode
                 value={selectedOption.address}
                 size={256}
                 level="H"
                 bgColor="#f0f0f0"
                 fgColor="#333333"
-                logo={getLogo(selectedOption.accountName)}
+                logo={getLogo(selectedOption.type)}
                 logoSize={50}
-            />
-            <Text style={[styles.addressLabel]}>{getNameShareAddress(selectedOption.accountName)}</Text>
-            <Text style={[styles.address]}>{formatAddress(selectedOption.address)}</Text>
+            />}
+            <Text style={[styles.addressLabel]}>{getNameShareAddress(selectedOption.type)}</Text>
+            <Text style={[styles.address]}>{selectedOption.address}</Text>
 
             <ButtonHome
                 icon={<IconQRCode size={25} color="white" />}
@@ -88,6 +76,8 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '400',
         width: '100%',
+        textAlign:'center',
+        marginTop:10
     },
     bold: {
         fontWeight: '600',

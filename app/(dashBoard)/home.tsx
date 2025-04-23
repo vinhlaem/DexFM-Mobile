@@ -14,25 +14,36 @@ import { AddressState, GeneralStatus } from "@/types/types";
 import ethService from "@/services/ether";
 import solanaService from "@/services/solana";
 import { formatAddress } from "@/utils/formatAddress";
-import BottomSheet, { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
+import BottomSheet, {
+  BottomSheetModal,
+  BottomSheetView,
+} from "@gorhom/bottom-sheet";
 import ShareAddress from "@/components/home/ShareAddress";
 import { Ionicons } from "@expo/vector-icons";
+import SendToken from "@/components/home/Send";
+import { tokenDetails } from "@/data/mockData";
+import WrapDashboard from "../../components/home/WrapDashboard";
 
 enum TypeBottomSheet {
-  Receive = 'Receive',
-  Send = 'Send'
+  Receive = "Receive",
+  Send = "Send",
 }
 
 const Tab = () => {
-  const [typeBottomSheet, setTypeBottomSheet] = useState<TypeBottomSheet>(TypeBottomSheet.Receive);
+  const [typeBottomSheet, setTypeBottomSheet] = useState<TypeBottomSheet>(
+    TypeBottomSheet.Receive
+  );
 
   const dispatch = useDispatch();
 
-  const ethereumAccounts = useSelector((state: RootState) => state.ethereum.addresses);
-  const solanaAccounts = useSelector((state: RootState) => state.solana.addresses);
+  const ethereumAccounts = useSelector(
+    (state: RootState) => state.ethereum.addresses
+  );
+  const solanaAccounts = useSelector(
+    (state: RootState) => state.solana.addresses
+  );
 
-
-  const snapPoints = useMemo(() => ['90%'], []);
+  const snapPoints = useMemo(() => ["90%"], []);
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
 
   const handleOpenBottomSheet = (type: TypeBottomSheet) => {
@@ -50,110 +61,14 @@ const Tab = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchBalances = async () => {
-      try {
-        const updatedEthereum: AddressState[] = await Promise.all(
-          ethereumAccounts.map(async (account) => {
-            const balance = await ethService.getBalance(account.address);
-            return {
-              accountName: account.accountName || "Ethereum Account",
-              derivationPath: account.derivationPath,
-              publicKey: account.publicKey,
-              address: account.address,
-              balance: Number(balance),
-              status: GeneralStatus.Success,
-              failedNetworkRequest: false,
-              transactionMetadata: account.transactionMetadata || {
-                transactions: [],
-                paginationKey: undefined,
-              },
-              transactionConfirmations: account.transactionConfirmations || [],
-            };
-          })
-        );
-
-        const updatedSolana: AddressState[] = await Promise.all(
-          solanaAccounts.map(async (account) => {
-            const balance = await solanaService.getBalance(account.address);
-            return {
-              accountName: account.accountName || "Solana Account",
-              derivationPath: account.derivationPath,
-              publicKey: account.publicKey,
-              address: account.address,
-              balance: Number(balance),
-              status: GeneralStatus.Success,
-              failedNetworkRequest: false,
-              transactionMetadata: account.transactionMetadata || {
-                transactions: [],
-                paginationKey: undefined,
-              },
-              transactionConfirmations: account.transactionConfirmations || [],
-            };
-          })
-        );
-
-        // Đảm bảo truyền đúng kiểu dữ liệu (mảng)
-        dispatch(saveEthereumAddresses(updatedEthereum));
-        dispatch(saveSolanaAddresses(updatedSolana));
-      } catch (error) {
-        console.error("Lỗi khi lấy số dư:", error);
-      }
-    };
-
-    if (ethereumAccounts.length || solanaAccounts.length) {
-      fetchBalances();
-    }
-  }, [ethereumAccounts, solanaAccounts]);
-
+  
 
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <HeaderHome />
-
-      <View style={{ marginVertical: 10, width: "90%" }}>
-        <View style={{ flexDirection: "row", width: "100%", justifyContent: "flex-start" }}>
-          <Text style={styles.labelMyWallet}>My Wallet</Text>
-          <Text style={[styles.labelMyWallet, styles.textWalletCode]}>{formatAddress(solanaAccounts[0].address)}</Text>
-        </View>
-        <Text style={styles.currencyTitle}>{formatCurrency(solanaAccounts[0].balance)}</Text>
-      </View>
-
-      <View style={styles.containerButton}>
-        <Button icon={<IconSend color="white" size={20} />} label="Send" onPress={() => handleOpenBottomSheet(TypeBottomSheet.Send)} />
-        <Button icon={<IconQRCode />} label="Receive" onPress={() => handleOpenBottomSheet(TypeBottomSheet.Receive)} />
-      </View>
-
-      <ListToken />
-
-      <BottomSheet
-        ref={bottomSheetRef}
-        index={-1}
-        snapPoints={snapPoints}
-        enablePanDownToClose={true}
-        onClose={() => setIsBottomSheetOpen(false)}
-        overDragResistanceFactor={0}
-        backgroundStyle={styles.bottomSheetBackground}
-      >
-        <BottomSheetView style={styles.bottomSheetContainer}>
-
-          {/* Header */}
-          <View style={styles.headerContainer}>
-            <Pressable style={[styles.hiddenBottomSheet, styles.center]} onPress={handleCloseBottomSheet}>
-              <Ionicons name="chevron-back-outline" size={20} color="#000" />
-            </Pressable>
-            <Text style={styles.headerText}>{typeBottomSheet === TypeBottomSheet.Receive ? 'Receive' : 'Send'}</Text>
-            <View style={styles.placeholder} />
-          </View>
-          {/* Content */}
-          {typeBottomSheet === TypeBottomSheet.Receive && <ShareAddress />}
-          {/* {typeBottomSheet === TypeBottomSheet.Send && <Send options={TokenBalanceType} />} */}
-
-        </BottomSheetView>
-      </BottomSheet >
-    </SafeAreaView>
+    <WrapDashboard>
+      <ListToken/>
+    </WrapDashboard>
   );
 };
 
@@ -162,35 +77,35 @@ export default Tab;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 1)'
+    alignItems: "center",
+    backgroundColor: "rgba(255, 255, 255, 1)",
   },
   containerButton: {
-    width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'space-around'
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "space-around",
   },
   currencyTitle: {
     fontSize: 36,
-    fontWeight: '500'
+    fontWeight: "500",
   },
   labelMyWallet: {
-    color: 'rgba(145, 148, 166, 1)',
-    fontWeight: '400',
-    fontSize: 18
+    color: "rgba(145, 148, 166, 1)",
+    fontWeight: "400",
+    fontSize: 18,
   },
   textWalletCode: {
     marginStart: 10,
-    backgroundColor: 'rgba(244, 245, 248, 1)',
+    backgroundColor: "rgba(244, 245, 248, 1)",
     paddingHorizontal: 5,
-    borderRadius: 20
+    borderRadius: 20,
   },
 
   // BottomSheet styles
   bottomSheetBackground: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 30,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 3, height: 3 },
     shadowOpacity: 0.2,
     shadowRadius: 15,
@@ -198,31 +113,31 @@ const styles = StyleSheet.create({
   },
   bottomSheetContainer: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: "center",
   },
 
   headerContainer: {
-    width: '90%',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    width: "90%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   hiddenBottomSheet: {
     width: 40,
     height: 40,
-    boxShadow: '0px 6px 16px 0px #2B2D3314',
-    borderRadius: 20
+    boxShadow: "0px 6px 16px 0px #2B2D3314",
+    borderRadius: 20,
   },
   headerText: {
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   placeholder: {
     width: 40,
   },
   center: {
-    justifyContent: 'center',
-    alignItems: 'center'
-  }
+    justifyContent: "center",
+    alignItems: "center",
+  },
 });

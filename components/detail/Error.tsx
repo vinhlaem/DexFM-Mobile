@@ -65,7 +65,7 @@ export default memo(function ErrorComponent({
             )}
 
             <View style={styles.iconWrapper}>
-                <Ionicons name="close" size={50} color="#ffffff" />
+                <Ionicons name="close" size={70} color="#ffffff" />
             </View>
 
             <Text style={styles.title}>{title}</Text>
@@ -89,9 +89,9 @@ const styles = StyleSheet.create({
         width: '100%',
     },
     iconWrapper: {
-        width: 80,
-        height: 80,
-        borderRadius: 40,
+        width: 120,
+        height: 120,
+        borderRadius: 100,
         backgroundColor: '#F8665A',
         justifyContent: 'center',
         alignItems: 'center',

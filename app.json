@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "DexFM-Mobile",
-    "slug": "DexFM-Mobile",
+    "name": "dexFM-App",
+    "slug": "dexFM-App",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -9,15 +9,14 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.DexFMMobile"
+      "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.anonymous.DexFMMobile"
+      "package": "com.vinhsooo.dexFMApp"
     },
     "web": {
       "bundler": "metro",
@@ -34,16 +33,18 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ],
-      [
-        "expo-local-authentication",
-        {
-          "faceIDPermission": "Allow DexFM-Mobile to use Face ID."
-        }
       ]
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "820c45cd-5ab2-455a-b5dd-fba7e691e6c5"
+      }
     }
   }
 }

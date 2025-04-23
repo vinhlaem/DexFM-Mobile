@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   ImageBackground,
   Keyboard,
   SafeAreaView,
@@ -105,7 +106,7 @@ const walletImportSeedPhrase = () => {
       const transformedActiveEthAddresses: AddressState[] =
         importedEthWallets.map((info, index) => {
           return {
-            accountName: `Account ${index + 1}`,
+            accountName: `Account Ethereum ${index + 1}`,
             derivationPath: info.derivationPath,
             address: info.address,
             publicKey: info.publicKey,
@@ -117,13 +118,14 @@ const walletImportSeedPhrase = () => {
             failedNetworkRequest: false,
             status: GeneralStatus.Idle,
             transactionConfirmations: [],
+            type: "ethereum",
           };
         });
 
       const transformedActiveSolAddresses: AddressState[] =
         importedSolWallets.map((info, index) => {
           return {
-            accountName: `Account ${index + 1}`,
+            accountName: `Account Solana ${index + 1}`,
             derivationPath: info.derivationPath,
             address: info.publicKey,
             publicKey: info.publicKey,
@@ -135,6 +137,7 @@ const walletImportSeedPhrase = () => {
             failedNetworkRequest: false,
             status: GeneralStatus.Idle,
             transactionConfirmations: [],
+            type: "solana",
           };
         });
       await savePhrase(JSON.stringify(phraseTextValue));
@@ -154,7 +157,7 @@ const walletImportSeedPhrase = () => {
       );
 
       router.push({
-        pathname: "/(wallet)/setup/wallet-created-successfully",
+        pathname: `/(wallet)/setup/wallet`,
         params: { successState: "IMPORTED_WALLET" },
       });
     } catch (err) {
@@ -167,7 +170,7 @@ const walletImportSeedPhrase = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <ImageBackground
         source={images.image}
         resizeMode="cover"
@@ -219,7 +222,7 @@ const walletImportSeedPhrase = () => {
           style={{ alignItems: "center", marginTop: 10, paddingBottom: 30 }}
         >
           {title !== "" && captions !== "" && (
-            <View>
+            <View style={{ marginBottom: 20 }}>
               <ThemedText type="title">{title}</ThemedText>
               <ThemedText type="subtitle">{captions}</ThemedText>
             </View>
@@ -228,13 +231,17 @@ const walletImportSeedPhrase = () => {
             onPress={() => handleVerifySeedPhrase()}
             style={styles.touchableOpacity}
           >
-            <Text style={{ color: "#fff", fontWeight: 500 }}>
-              Verify seed phrase
-            </Text>
+            {loading ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <Text style={{ color: "#fff", fontWeight: 500 }}>
+                Verify seed phrase
+              </Text>
+            )}
           </TouchableOpacity>
         </View>
       </ImageBackground>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -256,7 +263,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    // marginTop: 20,
+    marginTop: 40,
   },
   textContainer: {
     marginBottom: 10,

@@ -7,9 +7,8 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import "react-native-reanimated";
-// import "react-native-crypto";
 import "stream-browserify";
 import { Buffer } from "buffer";
 import "react-native-get-random-values";
@@ -26,18 +25,31 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
+  const [loaded, error] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
+  const [timeoutElapsed, setTimeoutElapsed] = useState(false);
 
   useEffect(() => {
-    if (loaded) {
+    const timer = setTimeout(() => {
+      setTimeoutElapsed(true);
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (loaded || error || timeoutElapsed) {
       SplashScreen.hideAsync();
     }
-  }, [loaded]);
-
-  if (!loaded) {
+  }, [loaded, error, timeoutElapsed]);
+  
+  if (!loaded && !error) {
     return null;
+  }
+  
+  if (error) {
+    console.error("Error loading fonts:", error);
   }
 
   if (typeof global !== "undefined") {
@@ -81,12 +93,12 @@ export default function RootLayout() {
                 headerShown: false,
               }}
             />
-            <Stack.Screen
+            {/* <Stack.Screen
               name={ROUTES.walletImportOptions}
               options={{
                 headerShown: false,
               }}
-            />
+            /> */}
             <Stack.Screen
               name={ROUTES.walletImportSeedPhrase}
               options={{
@@ -107,6 +119,55 @@ export default function RootLayout() {
             />
             <Stack.Screen
               name={ROUTES.detailToken}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name={ROUTES.search}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name={ROUTES.recovery}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name={ROUTES.seedPhraseRecovery}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name={ROUTES.manager}
+              options={{
+                headerShown: false,
+              }}
+            />
+
+            <Stack.Screen
+              name={ROUTES.editName}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name={ROUTES.accountAddresses}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name={ROUTES.privateKey}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name={ROUTES.PrivateKeyRecovery}
               options={{
                 headerShown: false,
               }}

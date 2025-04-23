@@ -93,3 +93,7 @@ export const secureClear = (variable: string | Buffer): void => {
     variable.fill(0);
   }
 };
+
+export const renderChangePrice = (price?: number) => {
+  return price == 0 || !price ? "#000" : price > 0 ? "green" : "red";
+}

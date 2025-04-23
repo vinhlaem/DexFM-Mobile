@@ -26,6 +26,7 @@ export interface AddressState {
   failedNetworkRequest: boolean;
   status: GeneralStatus;
   transactionConfirmations: TransactionConfirmation[];
+  type: string;
 }
 
 export enum ConfirmationState {
@@ -61,3 +62,16 @@ export interface WalletState {
   activeIndex: number;
   addresses: AddressState[];
 }
+
+export type OptionNetworkType = {
+  name: string;
+  slug: string;
+  id: string;
+  image: string;
+  slugDextool?: string;
+  symbol: string;
+  isSupport: boolean;
+  chain?: string
+  IdMoralis?: string
+  
+};

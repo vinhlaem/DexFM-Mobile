@@ -11,6 +11,9 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import CustomImage from '../ImageCustomer';
+import { RootState } from '@/store';
+import { useSelector } from 'react-redux';
+import { router } from 'expo-router';
 
 type THeaderHome = {
     searchValue?: string;
@@ -22,48 +25,45 @@ const HeaderHome = memo(({ }: THeaderHome) => {
     const [isSearching, setIsSearching] = useState(false);
     const inputWidth = useRef(new Animated.Value(0)).current;
 
+    const ethAccounts = useSelector(
+        (state: RootState) => state.ethereum.addresses
+      );
+
     const insets = useSafeAreaInsets();
     const IOS = Platform.OS === 'ios';
 
-    const toggleSearch = () => {
-        if (isSearching) {
-            Animated.timing(inputWidth, {
-                toValue: 0,
-                duration: 300,
-                useNativeDriver: false,
-            }).start(() => setIsSearching(false));
-        } else {
-            setIsSearching(true);
-            Animated.timing(inputWidth, {
-                toValue: 210,
-                duration: 300,
-                useNativeDriver: false,
-            }).start();
-        }
-    };
+    // const toggleSearch = () => {
+    //     if (isSearching) {
+    //         Animated.timing(inputWidth, {
+    //             toValue: 0,
+    //             duration: 300,
+    //             useNativeDriver: false,
+    //         }).start(() => setIsSearching(false));
+    //     } else {
+    //         setIsSearching(true);
+    //         Animated.timing(inputWidth, {
+    //             toValue: 210,
+    //             duration: 300,
+    //             useNativeDriver: false,
+    //         }).start();
+    //     }
+    // };
 
     return (
         <View style={[styles.container, { marginTop: IOS ? 0 : insets.top }]}>
             <Pressable style={styles.iconContainer}>
                 <CustomImage source={'ok'}
                     size={40}
+                    address={ethAccounts[0].address}
                     avatar={true}
                     width={40}
                     height={40}
                 />
             </Pressable>
 
-            <Animated.View style={[styles.inputContainer, { width: inputWidth }]}>
-                {isSearching && (
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Search..."
-                        placeholderTextColor="#999"
-                    />
-                )}
-            </Animated.View>
+    
 
-            <TouchableOpacity style={[styles.iconContainer, styles.searchContainer]} onPress={toggleSearch}>
+            <TouchableOpacity style={[styles.iconContainer, styles.searchContainer]} onPress={() => router.push('/(search)')}>
                 <Ionicons name="search" size={25} color="#535353" />
             </TouchableOpacity>
         </View>
@@ -86,18 +86,8 @@ const styles = StyleSheet.create({
         width: 45,
         height: 45
     },
-    inputContainer: {
-        height: 40,
-        backgroundColor: '#e1e1e1',
-        borderRadius: 20,
-        overflow: 'hidden',
-    },
-    input: {
-        flex: 1,
-        paddingHorizontal: 10,
-        fontSize: 16,
-        color: '#000',
-    },
+    
+    
     searchContainer: {
         boxShadow: '0 6px 16px 0 rgba(43, 45, 51, 0.08)',
         borderRadius: 50,

@@ -50,7 +50,6 @@ const Auth = () => {
     }
   };
 
-  // Xác thực bằng vân tay
   const handleFingerprintAuth = async () => {
     try {
       const supportedTypes =
@@ -89,7 +88,6 @@ const Auth = () => {
     }
   };
 
-  // Xác thực bằng mật khẩu máy
   const handleDevicePassAuth = async () => {
     try {
       const result = await LocalAuthentication.authenticateAsync({
@@ -115,7 +113,6 @@ const Auth = () => {
     }
   };
 
-  // Xác thực bằng mật khẩu do người dùng tạo
   const handlePasscodeAuth = async () => {
     setLoading(true);
     try {

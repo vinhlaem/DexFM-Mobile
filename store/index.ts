@@ -16,6 +16,7 @@ import solanaReducer from "./solanaSlice";
 import ethereumReducer from "./ethereumSlice";
 import priceReduce from "./priceSlice";
 import biometricsReducer from "./biometricsSlice";
+import favoritesReducer from "./favoriteSlice";
 import { formatEther } from "ethers";
 import ethService from "@/services/ether";
 
@@ -29,6 +30,7 @@ const rootReducer = combineReducers({
   solana: solanaReducer,
   price: priceReduce,
   biometrics: biometricsReducer,
+  favorites: favoritesReducer,  
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

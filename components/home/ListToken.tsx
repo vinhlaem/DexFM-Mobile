@@ -32,6 +32,8 @@ export default function ListToken() {
         return () => clearInterval(intervalId);
     }, [fetchCoins]);
 
+    
+
     return (
         <View style={styles.container}>
             <View style={styles.trendingSection}>
@@ -57,6 +59,7 @@ export default function ListToken() {
                             price={parseFloat(item.price)}
                             change={item.h24}
                             pair_address={item.pair_address}
+                            token_address={item.contract}
                         />
                     )}
                 />

@@ -3,6 +3,12 @@ import { View, Text, StyleSheet, Pressable } from "react-native";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { router } from "expo-router";
 import CustomImage from "../ImageCustomer";
+import { LinearGradient } from "react-native-svg";
+import DefaultLogo from "../ui/DefaulfLogo";
+import RenderPrice from "../ui/RenderPrice";
+import { Ionicons } from "@expo/vector-icons";
+import { renderChangePrice } from "@/utils/cryptoUtils";
+import PriceChange from "../ui/PriceChange";
 
 type CustomItemTokenProps = {
     iconUrl: string; // Đường dẫn ảnh
@@ -12,9 +18,10 @@ type CustomItemTokenProps = {
     change: number; // Thay đổi phần trăm
     pair_address?: string;
     chainId: string
+    token_address: string
 };
 
-const ItemToken = memo(({ iconUrl, name, symbol, price, change, pair_address, chainId }: CustomItemTokenProps) => {
+const ItemToken = memo(({ iconUrl, name, symbol, price, change, pair_address, chainId , token_address }: CustomItemTokenProps) => {
     const isPositive = change >= 0;
 
     const handleShowDetail = useCallback(() => {
@@ -22,7 +29,8 @@ const ItemToken = memo(({ iconUrl, name, symbol, price, change, pair_address, ch
             pathname: '/(detailToken)',
             params: {
                 pair_address: pair_address,
-                chainId: chainId
+                chainId: chainId,
+                token_address: token_address
             }
         })
     }, [pair_address]);
@@ -32,7 +40,7 @@ const ItemToken = memo(({ iconUrl, name, symbol, price, change, pair_address, ch
             style={styles.container}
             onPress={handleShowDetail}
         >
-            <CustomImage source={iconUrl} size={40} width={40} height={40} />
+           {iconUrl ? <CustomImage source={iconUrl} size={40} width={40} height={40} /> : <DefaultLogo symbol={symbol.slice(0, 1)} />}
 
             <View style={styles.infoContainer}>
                 <Text style={styles.name}>{name}</Text>
@@ -40,11 +48,8 @@ const ItemToken = memo(({ iconUrl, name, symbol, price, change, pair_address, ch
             </View>
 
             <View style={styles.priceContainer}>
-                <Text style={styles.price}>{formatCurrency(price, 6, 2)}</Text>
-                <Text style={[styles.change, { color: isPositive ? "#32B153" : "#E34446" }]}>
-                    {isPositive ? "+" : ""}
-                    {change.toFixed(2)}%
-                </Text>
+                {price ? <RenderPrice normalFontWeight price={String(price)} /> : <Text style={styles.price}>0</Text>}
+                <PriceChange change={change} />
             </View>
         </Pressable>
     );

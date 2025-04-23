@@ -56,7 +56,9 @@ export default memo(function SuccessComponent({
             )}
 
             <Animated.View style={[styles.iconWrapper, { opacity: confettiAnimation, transform: [{ scale: confettiAnimation }] },]}>
-                <Ionicons name="checkmark-circle" size={80} color="#4CAF50" />
+                {/* <Ionicons name="checkmark-circle" size={80} color="#4CAF50" /> */}
+
+         <Text style={{fontSize:40}}>🎉</Text>
             </Animated.View>
 
             <Text style={styles.title}>{title}</Text>
@@ -82,13 +84,13 @@ const styles = StyleSheet.create({
         position: 'relative',
     },
     iconWrapper: {
-        width: 100,
-        height: 100,
-        borderRadius: 50,
+        width: 120,
+        height: 120,
+        borderRadius: 100,
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 20,
-        backgroundColor: '#E8F5E9',
+        backgroundColor: 'rgba(244, 245, 248, 1)',
     },
     title: {
         fontSize: 24,
@@ -104,7 +106,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     viewTransactionButton: {
-        backgroundColor: '#4CAF50',
+        backgroundColor: 'rgba(43, 45, 51, 1)',
         width: '90%',
         position: 'absolute',
         bottom: 20,

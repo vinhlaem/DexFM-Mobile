@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import ethService from "@/services/ether";
 import solanaService from "@/services/solana";
 import { AddressState, GeneralStatus } from "@/types/types";
@@ -25,6 +25,7 @@ import {
 import { View } from "react-native";
 import { Formik } from "formik";
 import * as Yup from "yup";
+import Button from "@/components/Button";
 
 const validationSchema = Yup.object().shape({
   password: Yup.string()
@@ -43,6 +44,8 @@ const validationSchema = Yup.object().shape({
 export default function WalletSetup() {
   const image = require("../../../assets/images/background.jpeg");
 
+  const { successState } = useLocalSearchParams();
+
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
 
@@ -51,17 +54,27 @@ export default function WalletSetup() {
   const savePasscode = async (passcode: string) => {
     try {
       await SecureStore.setItemAsync("passcode", passcode);
-      Alert.alert("Thành công!", "Mật khẩu đã được lưu.");
-      router.push("/(wallet)/setup/wallet-created-successfully");
+      Alert.alert("Success!", "Your password saved");
+
+      router.push({
+        pathname: "/(wallet)/setup/wallet-created-successfully",
+        params: {
+          successState:
+            successState === "CREATED_WALLET"
+              ? "CREATED_WALLET"
+              : "IMPORTED_WALLET",
+        },
+      });
     } catch (error) {
-      Alert.alert("Lỗi", "Không thể lưu mật khẩu.");
+      Alert.alert("Error", "Can't save password");
     }
   };
 
   return (
-    <View>
+    <View style={styles.mainContainer}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.keyboardAvoidingView}
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <ImageBackground
@@ -82,8 +95,6 @@ export default function WalletSetup() {
                   initialValues={{ password: "", confirmPassword: "" }}
                   validationSchema={validationSchema}
                   onSubmit={(values) => {
-                    console.log("Submitted values:", values);
-                    // alert("Password is valid!");
                     savePasscode(values.password);
                   }}
                 >
@@ -96,12 +107,11 @@ export default function WalletSetup() {
                     touched,
                   }) => (
                     <View style={styles.containerForm}>
-                      <View>
-                        <Text style={styles.label}>Password</Text>
+                      <View style={styles.inputContainer}>
                         <TextInput
                           style={styles.input}
                           placeholder="Password"
-                          placeholderTextColor="#568373"
+                          placeholderTextColor="#cbcbcb"
                           secureTextEntry
                           onChangeText={handleChange("password")}
                           onBlur={handleBlur("password")}
@@ -113,11 +123,10 @@ export default function WalletSetup() {
                           </Text>
                         )}
 
-                        <Text style={styles.label}>Confirm Password</Text>
                         <TextInput
                           style={styles.input}
                           placeholder="Confirm Password"
-                          placeholderTextColor="#568373"
+                          placeholderTextColor="#cbcbcb"
                           secureTextEntry
                           onChangeText={handleChange("confirmPassword")}
                           onBlur={handleBlur("confirmPassword")}
@@ -130,12 +139,11 @@ export default function WalletSetup() {
                         )}
                       </View>
 
-                      <TouchableOpacity
-                        style={styles.button}
-                        onPress={() => handleSubmit()}
-                      >
-                        <Text style={styles.buttonText}>Create account</Text>
-                      </TouchableOpacity>
+                      <Button
+                        label="Create password"
+                        onPress={handleSubmit}
+                        containerStyles={styles.buttonContainer}
+                      />
                     </View>
                   )}
                 </Formik>
@@ -149,14 +157,18 @@ export default function WalletSetup() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    // padding: 10,
-    marginTop: 50,
+  mainContainer: {
     flex: 1,
   },
+  keyboardAvoidingView: {
+    flex: 1,
+  },
+  container: {
+    flex: 1,
+    flexDirection: "column",
+    marginTop: 50
+  },
   imageBackground: {
-    // flex: 1,
-    // justifyContent: "center",
     width: "100%",
     height: "100%",
   },
@@ -167,57 +179,44 @@ const styles = StyleSheet.create({
   },
   textPassword: {
     fontSize: 20,
-    fontWeight: 700,
+    fontWeight: "700",
   },
   textDescription: {
     fontSize: 16,
-    fontWeight: 400,
+    fontWeight: "400",
     marginTop: 10,
   },
-
   containerInput: {
+    flex: 1,
     paddingTop: 50,
     paddingLeft: 30,
     paddingRight: 30,
   },
   containerForm: {
-    // flex: 1,
+    flex: 1,
     justifyContent: "space-between",
-    height: "83%",
+    flexDirection: "column",
   },
-  label: {
-    fontSize: 16,
-    marginBottom: 8,
+  inputContainer: {
+    flexGrow: 1,
   },
   input: {
     borderWidth: 1,
-    borderColor: "#568373",
-    borderRadius: 50,
-    padding: 10,
-    fontSize: 16,
-    marginBottom: 12,
+    borderRadius: 8,
+    padding: 15,
+    width: "100%",
+    marginBottom: 20,
+    backgroundColor: "rgba(0, 0, 0, 0.3)",
+    color: "white",
   },
   errorText: {
     color: "red",
     fontSize: 14,
     marginBottom: 10,
   },
-  button: {
-    backgroundColor: "#568373",
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 30,
-    elevation: 10,
-    shadowColor: "rgba(43, 45, 51)",
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.2,
-    shadowRadius: 24,
-    alignItems: "center",
-    marginTop: 20,
-  },
-  buttonText: {
-    color: "#FFF",
-    fontSize: 18,
-    fontWeight: "bold",
+  buttonContainer: {
+    width: "100%",
+    marginVertical: 20,
+    alignSelf: "center",
   },
 });

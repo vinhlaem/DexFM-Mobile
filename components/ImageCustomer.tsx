@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import {
     View,
     StyleSheet,
@@ -8,6 +8,8 @@ import {
 } from 'react-native';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
+
+import { minidenticon } from 'minidenticons'
 
 interface CustomImageProps {
     source?: string; // URL for the image
@@ -20,6 +22,8 @@ interface CustomImageProps {
     width?: number;
     height?: number;
     blurhash?: string; // Blurhash placeholder for loading
+    address?: string
+
 }
 
 const CustomImage: React.FC<CustomImageProps> = React.memo(
@@ -34,6 +38,7 @@ const CustomImage: React.FC<CustomImageProps> = React.memo(
         size = 20,
         iconColor = '#ccc',
         blurhash,
+        address
     }) => {
         const [loading, setLoading] = useState<boolean>(true);
         const [error, setError] = useState<boolean>(false);
@@ -52,7 +57,16 @@ const CustomImage: React.FC<CustomImageProps> = React.memo(
             setError(true);
             setLoading(false);
         }, []);
+        const svgURI = useMemo(() => {
+            const svg = minidenticon(address ?? '', 90, 50);
+            const optimizedSvg = svg.replace(
+                /viewBox="[^"]*"/,
+                'viewBox="0 0 5 5"'
+            );
+            return 'data:image/svg+xml;utf8,' + encodeURIComponent(optimizedSvg);
+        }, [address]);
 
+        const isURIValid = address && address !== '';
         return (
             <View
                 style={[
@@ -69,9 +83,9 @@ const CustomImage: React.FC<CustomImageProps> = React.memo(
                     </View>
                 )}
 
-                {isSourceValid && !error ? (
+                {isSourceValid && !error && isURIValid ? (
                     <Image
-                        source={source!}
+                        source={svgURI}
                         style={[styles.image, rounded && styles.rounded]}
                         contentFit="cover"
                         onLoadStart={onLoadStart}
@@ -79,7 +93,16 @@ const CustomImage: React.FC<CustomImageProps> = React.memo(
                         onError={onError}
                         placeholder={{ blurhash }}
                     />
-                ) : (
+                ) : isSourceValid && !error && !isURIValid ? (
+                    <Image
+                        source={source}
+                        style={[styles.image, rounded && styles.rounded]}
+                        contentFit="cover"
+                        onLoadStart={onLoadStart}
+                        onLoadEnd={onLoadEnd}
+                        onError={onError}
+                        placeholder={{ blurhash }}
+                    />): (
                     <Ionicons
                         name={avatar ? 'person-circle' : 'alert-circle'}
                         size={size}

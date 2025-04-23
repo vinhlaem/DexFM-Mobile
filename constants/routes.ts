@@ -3,7 +3,7 @@ export interface Routes {
   auth: string;
   walletSetup: string;
   walletCreatedSuccessfully: string;
-  walletImportOptions: string;
+  // walletImportOptions: string;
   seedPhrase: string;
   confirmSeedPhrase: string;
   restoreSeedPhrase: string;
@@ -25,6 +25,14 @@ export interface Routes {
   confirmation: string;
   dashBoard: string;
   detailToken: string;
+  search: string;
+  recovery: string;
+  seedPhraseRecovery: string;
+  manager: string;
+  editName: string;
+  accountAddresses: string;
+  privateKey: string;
+  PrivateKeyRecovery: string;
 }
 
 export const ROUTES: Routes = {
@@ -32,7 +40,7 @@ export const ROUTES: Routes = {
   auth: "(auth)/auth",
   walletSetup: "(wallet)/setup/wallet",
   walletCreatedSuccessfully: "(wallet)/setup/wallet-created-successfully",
-  walletImportOptions: "(wallet)/setup/wallet-import-options",
+  // walletImportOptions: "(wallet)/setup/wallet-import-options",
   seedPhrase: "(wallet)/seed/seed-phrase",
   confirmSeedPhrase: "(wallet)/seed/confirm-seed-phrase",
   restoreSeedPhrase: "(wallet)/seed/restore-seed-phrase",
@@ -53,5 +61,13 @@ export const ROUTES: Routes = {
   accountNameModal: "/(app)/accounts/account-name-modal",
   confirmation: "/(app)/token/confirmation",
   dashBoard: "(dashBoard)",
-  detailToken: "(detailToken)",
+  detailToken: "(detailToken)/index",
+  search: "(search)/index",
+  recovery: "(recovery)/recovery",
+  seedPhraseRecovery: "(recovery)/seed-phrase-recovery",
+  manager: "(wallet)/manager/manager",
+  editName: "(wallet)/manager/edit-name",
+  accountAddresses: "(wallet)/manager/account-addresses",
+  privateKey: "(wallet)/manager/private-key",
+  PrivateKeyRecovery: "(wallet)/manager/private-key-recovery",
 };

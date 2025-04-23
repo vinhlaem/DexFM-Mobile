@@ -21,13 +21,20 @@ const walletCreatedSuccessfully = () => {
   );
 
   useEffect(() => {
-    if (successState === "import") {
+    if (successState === "IMPORTED_WALLET") {
       setTitle("Wallet Imported Successfully");
       setSubtitle(
         "Your imported wallet is ready! Dive into securing and exploring your financial future. Your crypto journey starts now."
       );
     }
   }, [successState]);
+
+
+  useEffect(() => {
+    setTimeout(() => {
+      router.push("/(dashBoard)/home");
+    }, 3000);
+  }, []);
   return (
     <View style={styles.container}>
       <ImageBackground
@@ -45,14 +52,14 @@ const walletCreatedSuccessfully = () => {
               {subtitle}
             </ThemedText>
           </View>
-          <View style={styles.containerViewButton}>
+          {/* <View style={styles.containerViewButton}>
             <TouchableOpacity
               style={styles.buttonHome}
               onPress={() => router.push("/(dashBoard)/home")}
             >
               <Text style={styles.textHome}>Go to home</Text>
             </TouchableOpacity>
-          </View>
+          </View> */}
         </View>
       </ImageBackground>
     </View>

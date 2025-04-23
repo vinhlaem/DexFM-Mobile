@@ -5,12 +5,14 @@ import IconFaceID from "@/assets/svgComponents/IconFaceID";
 import { ItemSetting, ItemSettingSwitch } from "@/components/setting/ItemSetting";
 import { resetEthereumState } from "@/store/ethereumSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { resetSolanaState } from "@/store/solanaSlice";
 import * as SecureStore from "expo-secure-store";
 import { useRouter } from "expo-router";
 import { BIOMETRICS } from "@/constants/security";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { RootState } from "@/store";
+import { formatAddress } from "@/utils/formatAddress";
 
 const Tab = () => {
   const dispatch = useDispatch();
@@ -18,6 +20,8 @@ const Tab = () => {
 
   const insets = useSafeAreaInsets();
   const IOS = Platform.OS === 'ios';
+
+  const account = useSelector((state: RootState) => state.ethereum.addresses);
 
   const [biometrics, setBiometrics] = useState<boolean>(false);
 
@@ -37,6 +41,9 @@ const Tab = () => {
 
       await SecureStore.deleteItemAsync("mnemonic");
       await SecureStore.deleteItemAsync(BIOMETRICS);
+      await SecureStore.deleteItemAsync("phrase");
+      await SecureStore.deleteItemAsync("phraseKey");
+      await SecureStore.deleteItemAsync("passcode");
       router.replace("/");
 
       console.log('Logged out successfully!');
@@ -70,7 +77,7 @@ const Tab = () => {
       >
         <View style={styles.itemContainer}>
           <Text style={styles.titleText}>Wallet setting</Text>
-          <ItemSetting title="Wallet setting" onPress={() => { }} content="Wallet setting" Icon={() => <Ionicons name="wallet" size={24} color="black" />} />
+          <ItemSetting title={account[0].accountName} onPress={() => router.push("/(wallet)/manager/manager")} content={formatAddress(account[0].address)} Icon={() => <Ionicons name="wallet" size={24} color="black" />} />
         </View>
 
         <View style={styles.itemContainer}>
@@ -82,7 +89,7 @@ const Tab = () => {
         <View style={styles.itemContainer}>
           <Text style={styles.titleText}>Security</Text>
           <ItemSettingSwitch title="Face ID" onValueChange={setBiometrics} Icon={() => <IconFaceID size={24} color="black" />} value={biometrics} />
-          <ItemSetting title="Recovery pharse" onPress={() => { }} Icon={() => <Ionicons name="key" size={24} color="black" />} />
+          <ItemSetting title="Recovery pharse" onPress={() => router.push("/(recovery)/recovery")} Icon={() => <Ionicons name="key" size={24} color="black" />} />
           <ItemSetting title="Icloud backup" onPress={() => { }} Icon={() => <Ionicons name="cloud" size={24} color="black" />} />
         </View>
 
