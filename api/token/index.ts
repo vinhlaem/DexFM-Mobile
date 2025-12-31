@@ -6,9 +6,17 @@ import {
 } from "@/types/tokenType";
 import axios from "axios";
 
-const BASE_URL = "https://dexfmbe.azurewebsites.net/v1";
+const BASE_URL =
+  process.env.EXPO_PUBLIC_BASE_URL || "https://dexfmbe.azurewebsites.net/v1";
 
-const NEXT_PUBLIC_DEXSCREENER_API = "https://api.dexscreener.com";
+const NEXT_PUBLIC_DEXSCREENER_API =
+  process.env.EXPO_PUBLIC_DEXSCREENER_API || "https://api.dexscreener.com";
+
+const GECKOTERMINAL_API =
+  process.env.EXPO_PUBLIC_GECKOTERMINAL_API || "https://api.geckoterminal.com";
+
+const GOPLUSLABS_API =
+  process.env.EXPO_PUBLIC_GOPLUSLABS_API || "https://api.gopluslabs.io";
 
 export const getTrandingTokens = async (
   payload: string
@@ -44,7 +52,7 @@ export const getTokenDetailFromCoinGecko = async (
   const network = LIST_LINK.find((item) => item.slug === chainId);
 
   const response_token = await axios.get(
-    `https://api.geckoterminal.com/api/v2/networks/${network?.id}/tokens/${token_address}`
+    `${GECKOTERMINAL_API}/api/v2/networks/${network?.id}/tokens/${token_address}`
   );
 
   const {
@@ -66,8 +74,6 @@ export const getTokenDetailFromCoinGecko = async (
 
   const quoteToken = response_token.data.data.id.split("_");
   const pairAddress = top_pools.data[0]?.id.split("_")[1] ?? "";
-
-  console.log(symbol.length, "leght");
 
   const pairNew: TokenDetail = {
     chainId: network?.slug || "ethereum",
@@ -157,7 +163,7 @@ export const getTokenSecurity = async (
   chainId: string
 ): Promise<ApiResponseTokenSecurity> => {
   const res = await axios.get(
-    `https://api.gopluslabs.io/api/v1/token_security/${chainId}?contract_addresses=${address}`
+    `${GOPLUSLABS_API}/api/v1/token_security/${chainId}?contract_addresses=${address}`
   );
 
   return res?.data;

@@ -1,4 +1,4 @@
-import { SafeAreaView, StyleSheet, Text, View } from "react-native";
+import { Platform, SafeAreaView, StyleSheet, Text, View } from "react-native";
 import React, { useState } from "react";
 import HeaderPage from "@/components/ui/HeaderPage";
 import { useSelector } from "react-redux";
@@ -10,8 +10,11 @@ import { getNameShareAddress } from "@/utils/getNameCrypto";
 import IconQRCode from "@/assets/svgComponents/IconQRCode";
 import ButtonHome from "@/components/Button";
 import * as Clipboard from "expo-clipboard";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const AccountAddresses = () => {
+  const insets = useSafeAreaInsets();
+
   const ethereumAccounts = useSelector(
     (state: RootState) => state.ethereum.addresses
   );
@@ -27,7 +30,7 @@ const AccountAddresses = () => {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={[styles.safeArea, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
       <View style={{ paddingHorizontal: 20 }}>
         <HeaderPage title="Account Addresses" />
       </View>
@@ -126,5 +129,10 @@ const styles = StyleSheet.create({
     elevation: 5,
     width: "90%",
     marginHorizontal: 20,
+    ...Platform.select({
+      android: {
+        marginBottom: 10, 
+      },
+    }),
   },
 });

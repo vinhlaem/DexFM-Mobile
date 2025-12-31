@@ -14,12 +14,14 @@ import { getSearchTokens, getTopTokens } from "@/api/token";
 import { FlatList } from "react-native-gesture-handler";
 import { TokenDetail } from "@/types/tokenType";
 import ItemToken from "@/components/home/ItemToken";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 export default function Search() {
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [searchResults, setSearchResults] = useState<TokenDetail[]>([]);
   const [topTokens, setTopTokens] = useState<TokenDetail[]>([]);
   const debouncedSearch = useDebounce(search, 500);
+  const insets = useSafeAreaInsets();
 
 
 
@@ -61,7 +63,7 @@ export default function Search() {
 
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
       <View style={styles.headerContainer}>
         <View style={styles.inputContainer}>
           <Ionicons name="search" size={20} color="#535353" />

@@ -4,7 +4,6 @@ import {
   View,
   TouchableOpacity,
   ScrollView,
-  ActivityIndicator,
   Platform,
 } from "react-native";
 import React, { useEffect, useState, useCallback } from "react";
@@ -219,6 +218,11 @@ const styles = StyleSheet.create({
     elevation: 5,
     width: "90%",
     marginHorizontal: 20,
+    ...Platform.select({
+      android: {
+        marginBottom: 10, 
+      },
+    }),
   },
   doneButtonText: {
     color: "white",

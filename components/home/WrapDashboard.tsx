@@ -9,10 +9,8 @@ import ListToken from "@/components/home/ListToken";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
 import { saveEthereumAddresses } from "@/store/ethereumSlice";
-import { saveSolanaAddresses } from "@/store/solanaSlice";
 import { AddressState, GeneralStatus } from "@/types/types";
 import ethService from "@/services/ether";
-import solanaService from "@/services/solana";
 import { formatAddress } from "@/utils/formatAddress";
 import BottomSheet, {
   BottomSheetModal,
@@ -30,9 +28,7 @@ enum TypeBottomSheet {
 }
 
 const WrapDashboard = ({children}:{children: ReactNode}) => {
-  const [typeBottomSheet, setTypeBottomSheet] = useState<TypeBottomSheet>(
-    TypeBottomSheet.Receive
-  );
+  const [typeBottomSheet, setTypeBottomSheet] = useState<TypeBottomSheet | undefined>();
 
 
   const dispatch = useDispatch<AppDispatch>();
@@ -103,6 +99,8 @@ const WrapDashboard = ({children}:{children: ReactNode}) => {
   //   }
   // }, [ethereumAccounts, solanaAccounts]);
 
+
+
   const snapPoints = useMemo(() => ["90%"], []);
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
 
@@ -118,6 +116,7 @@ const WrapDashboard = ({children}:{children: ReactNode}) => {
     if (isBottomSheetOpen) {
       bottomSheetRef.current?.close();
       setIsBottomSheetOpen(false);
+      setTypeBottomSheet(undefined);
     }
   };
 
@@ -181,13 +180,14 @@ const WrapDashboard = ({children}:{children: ReactNode}) => {
               <Ionicons name="chevron-back-outline" size={20} color="#000" />
             </Pressable>
             <Text style={styles.headerText}>
-              {typeBottomSheet === TypeBottomSheet.Receive ? "Receive" : "Send"}
+              {typeBottomSheet ===TypeBottomSheet.Receive && 'Receive' }
+              {typeBottomSheet ===TypeBottomSheet.Send && 'Send' }
             </Text>
             <View style={styles.placeholder} />
           </View>
           {/* Content */}
           {typeBottomSheet === TypeBottomSheet.Receive && <ShareAddress />}
-          {typeBottomSheet === TypeBottomSheet.Send && <SendToken  options={[...ethereumAccounts, ...solanaAccounts]} />}
+          {typeBottomSheet === TypeBottomSheet.Send && <SendToken options={[...ethereumAccounts, ...solanaAccounts]} />}
         </BottomSheetView>
       </BottomSheet>
     </SafeAreaView>

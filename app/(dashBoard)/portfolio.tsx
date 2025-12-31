@@ -13,4 +13,3 @@ const Tab = () => {
 
 export default Tab;
 
-const styles = StyleSheet.create({});

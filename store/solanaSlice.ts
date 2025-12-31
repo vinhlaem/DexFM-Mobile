@@ -1,7 +1,4 @@
-import "react-native-get-random-values";
-import "@ethersproject/shims";
-
-import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
+import { SolanaService } from "@/services/solana";
 import {
   AddressState,
   ConfirmationState,
@@ -10,12 +7,22 @@ import {
   TransactionConfirmation,
   WalletState,
 } from "@/types/types";
-import solanaService from "@/services/solana";
 import { truncateBalance } from "@/utils/trunWalletBalance";
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 
+const EXPO_PUBLIC_ALCHEMY_SOL_URL =
+  process.env.EXPO_PUBLIC_ALCHEMY_SOL_URL || "";
+const EXPO_PUBLIC_ALCHEMY_SOL_API_KEY =
+  process.env.EXPO_PUBLIC_ALCHEMY_SOL_API_KEY || "";
 const CONFIRMATION_TIMEOUT = 60000;
+
+
+
+export const solanaService = new SolanaService(
+  EXPO_PUBLIC_ALCHEMY_SOL_URL + EXPO_PUBLIC_ALCHEMY_SOL_API_KEY
+);
+
 const initialState: WalletState = {
-  activeIndex: 0,
   addresses: [
     {
       accountName: "",
@@ -30,40 +37,11 @@ const initialState: WalletState = {
         paginationKey: undefined,
         transactions: [],
       },
+      type: "",
     },
   ],
+  activeIndex: 0,
 };
-
-export interface FetchTransactionsArg {
-  address: string;
-  paginationKey?: string[] | string;
-}
-
-export const fetchSolanaTransactions = createAsyncThunk(
-  "wallet/fetchSolanaTransactions",
-  async (address: string, { rejectWithValue }): Promise<any> => {
-    try {
-      const transactions = await solanaService.getTransactionsByWallet(address);
-      return transactions;
-    } catch (error: any) {
-      console.error("error", error);
-      return rejectWithValue(error.message);
-    }
-  }
-);
-
-export const fetchSolanaTransactionsInterval = createAsyncThunk(
-  "wallet/fetchSolanaTransactionsInterval",
-  async (address: string, { rejectWithValue }): Promise<any> => {
-    try {
-      const transactions = await solanaService.getTransactionsByWallet(address);
-      return transactions;
-    } catch (error: any) {
-      console.error("error", error);
-      return rejectWithValue(error.message);
-    }
-  }
-);
 
 export const fetchSolanaBalance = createAsyncThunk(
   "wallet/fetchSolanaBalance",
@@ -71,6 +49,40 @@ export const fetchSolanaBalance = createAsyncThunk(
     try {
       const currentSolBalance = await solanaService.getBalance(tokenAddress);
       return currentSolBalance;
+    } catch (error: any) {
+      console.error("error", error);
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const fetchSolanaTransactions = createAsyncThunk(
+  "solana/fetchTransactions",
+  async (walletAddress: string, { rejectWithValue }) => {
+    try {
+      console.log("Fetching transactions for:", walletAddress);
+      const transactions = await solanaService.getTransactionsByWallet(
+        walletAddress
+      );
+      return transactions;
+    } catch (error) {
+      console.error("fetchSolanaTransactions error:", error);
+      return rejectWithValue((error as Error).message);
+    }
+  }
+);
+
+export interface FetchTransactionsArg {
+  address: string;
+  paginationKey?: string[] | string;
+}
+
+export const fetchSolanaTransactionsInterval = createAsyncThunk(
+  "wallet/fetchSolanaTransactionsInterval",
+  async (address: string, { rejectWithValue }): Promise<any> => {
+    try {
+      const transactions = await solanaService.getTransactionsByWallet(address);
+      return transactions;
     } catch (error: any) {
       console.error("error", error);
       return rejectWithValue(error.message);
@@ -139,7 +151,7 @@ export const confirmSolanaTransaction = createAsyncThunk(
   }
 );
 
-export const solanaSlice = createSlice({
+ const solanaSlice = createSlice({
   name: "solana",
   initialState,
   reducers: {
@@ -191,7 +203,6 @@ export const solanaSlice = createSlice({
           action.payload.accountName;
       }
     },
-    // TODO: Refactor. This is an tech debt from redux refactor
     setActiveSolanaAccount: (state, action: PayloadAction<number>) => {
       state.activeIndex = action.payload;
     },
@@ -334,15 +345,15 @@ export const solanaSlice = createSlice({
 });
 
 export const {
+  saveSolanaAddresses,
   depositSolana,
   withdrawSolana,
   addSolanaTransaction,
   updateSolanaBalance,
-  saveSolanaAddresses,
-  resetSolanaState,
-  setActiveSolanaAccount,
   updateSolanaAddresses,
   updateSolanaAccountName,
+  setActiveSolanaAccount,
+  resetSolanaState,
 } = solanaSlice.actions;
 
 export default solanaSlice.reducer;

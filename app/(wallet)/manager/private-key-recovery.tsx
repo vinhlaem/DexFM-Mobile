@@ -4,12 +4,10 @@ import {
   View,
   TouchableOpacity,
   ScrollView,
-  ActivityIndicator,
   Platform,
 } from "react-native";
-import React, { useEffect, useState, useCallback, useMemo } from "react";
+import React, {  useState, useMemo } from "react";
 import { Ionicons } from "@expo/vector-icons";
-import { getPhrase } from "@/hooks/useStorageState";
 import { router } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as Clipboard from "expo-clipboard";
@@ -17,7 +15,6 @@ import HeaderPage from "@/components/ui/HeaderPage";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { AddressState } from "@/types/types";
-import SelectorToken from "@/components/SelectToken";
 import CustomSelector from "@/components/Selector";
 
 const PrivateKeyRecovery = () => {
@@ -174,6 +171,11 @@ const styles = StyleSheet.create({
     shadowRadius: 24,
     elevation: 5,
     marginHorizontal: 20,
+    ...Platform.select({
+      android: {
+        marginBottom: 10, 
+      },
+    }),
   },
   doneButtonText: {
     color: "white",

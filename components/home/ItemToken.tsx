@@ -9,6 +9,7 @@ import RenderPrice from "../ui/RenderPrice";
 import { Ionicons } from "@expo/vector-icons";
 import { renderChangePrice } from "@/utils/cryptoUtils";
 import PriceChange from "../ui/PriceChange";
+import { renderName } from "@/utils/string";
 
 type CustomItemTokenProps = {
     iconUrl: string; // Đường dẫn ảnh
@@ -43,7 +44,8 @@ const ItemToken = memo(({ iconUrl, name, symbol, price, change, pair_address, ch
            {iconUrl ? <CustomImage source={iconUrl} size={40} width={40} height={40} /> : <DefaultLogo symbol={symbol.slice(0, 1)} />}
 
             <View style={styles.infoContainer}>
-                <Text style={styles.name}>{name}</Text>
+                <Text style={styles.name}>{renderName
+                (name, 20)}</Text>
                 <Text style={styles.symbol}>{symbol}</Text>
             </View>
 

@@ -29,7 +29,7 @@ const ShareAddress: React.FC = () => {
                 setSelectedOption={setSelectedOption}
                 containerStyle={{ marginVertical: 20 }}
             />
-            {selectedOption.address && <CustomQRCode
+             <CustomQRCode
                 value={selectedOption.address}
                 size={256}
                 level="H"
@@ -37,7 +37,7 @@ const ShareAddress: React.FC = () => {
                 fgColor="#333333"
                 logo={getLogo(selectedOption.type)}
                 logoSize={50}
-            />}
+            />
             <Text style={[styles.addressLabel]}>{getNameShareAddress(selectedOption.type)}</Text>
             <Text style={[styles.address]}>{selectedOption.address}</Text>
 

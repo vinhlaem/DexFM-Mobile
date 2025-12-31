@@ -10,10 +10,8 @@ import {
   StyleSheet,
   Text,
   View,
-  Image,
   ScrollView,
   ActivityIndicator,
-  StatusBar,
   Pressable,
   TouchableOpacity,
   TextInput,
@@ -46,8 +44,7 @@ import formatNumber, {
 import ErrorComponent from "@/components/detail/Error";
 import SuccessComponent from "@/components/detail/Success";
 import CustomImage from "@/components/ImageCustomer";
-import { LinearGradient } from "expo-linear-gradient";
-import { randomColor } from "@/utils/randomcolor";
+
 import { useTokenImagePath } from "@/hooks/useGetImageToken";
 import { fromNow } from "@/utils/Date";
 import { LIST_LINK } from "@/constants/ListNetwork";
@@ -59,9 +56,7 @@ import {
   selectFavorites,
 } from "@/store/favoriteSlice";
 import DefaultLogo from "@/components/ui/DefaulfLogo";
-import { renderChangePrice } from "@/utils/cryptoUtils";
 import PriceChange from "@/components/ui/PriceChange";
-import TradingViewChart from "@/components/detail/TradingViewChart";
 import IframeChart from "@/components/detail/IframeChart";
 
 export default function DetailToken() {

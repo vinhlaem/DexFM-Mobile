@@ -41,17 +41,17 @@ export const webSocketMiddleware: Middleware =
     if (action.type === "wallet/saveEthereumAddress") {
       const state = store.getState();
       const { ethereum, activeIndex } = state.ethereum;
-      ethService.getWebSocketProvider().on("block", async () => {
+      ethService.getWebSocketProvider()?.on("block", async () => {
         const balance = await ethService
           .getWebSocketProvider()
-          .getBalance(ethereum.addresses[activeIndex]);
+          ?.getBalance(ethereum.addresses[activeIndex]);
         store.dispatch({
           type: "wallet/updateEthereumBalance",
-          payload: formatEther(balance),
+          payload: formatEther(balance ?? 0n),
         });
       });
 
-      return () => ethService.getWebSocketProvider().removeAllListeners();
+      return () => ethService.getWebSocketProvider()?.removeAllListeners();
     }
   };
 

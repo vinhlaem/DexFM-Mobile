@@ -5,15 +5,17 @@ import {
   Image,
   TouchableOpacity,
   SafeAreaView,
+  Platform,
 } from "react-native";
 import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import HeaderPage from "@/components/ui/HeaderPage";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const PrivateKey = () => {
   const [isChecked, setIsChecked] = useState(false);
-
+  const insets = useSafeAreaInsets();
   const TEXTWARNING = [
     {
       title:
@@ -33,7 +35,7 @@ const PrivateKey = () => {
   ];
 
   return (
-    <SafeAreaView style={styles.container}>
+      <SafeAreaView style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
       {/* Header */}
       <View style={{ paddingHorizontal: 20 }}>
         <HeaderPage title="Show Private Key" />
@@ -161,6 +163,11 @@ const styles = StyleSheet.create({
     shadowRadius: 24,
     elevation: 5,
     marginHorizontal: 20,
+    ...Platform.select({
+      android: {
+        marginBottom: 10, 
+      },
+    }),
   },
   buttonDisabled: {
     backgroundColor: "#666",

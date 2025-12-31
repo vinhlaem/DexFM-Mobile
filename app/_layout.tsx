@@ -12,16 +12,18 @@ import "react-native-reanimated";
 import "stream-browserify";
 import { Buffer } from "buffer";
 import "react-native-get-random-values";
-
+import { Provider } from "react-redux";
+import { store, persistor } from "@/store";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { ROUTES } from "@/constants/routes";
-import { Provider } from "react-redux";
-import { store } from "@/store";
-
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { PersistGate } from "redux-persist/integration/react";
+
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
+
+
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -33,31 +35,31 @@ export default function RootLayout() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setTimeoutElapsed(true);
-    }, 5000);
+    }, 2000);
 
     return () => clearTimeout(timer);
   }, []);
+
+  
 
   useEffect(() => {
     if (loaded || error || timeoutElapsed) {
       SplashScreen.hideAsync();
     }
   }, [loaded, error, timeoutElapsed]);
-  
+
   if (!loaded && !error) {
     return null;
-  }
-  
-  if (error) {
-    console.error("Error loading fonts:", error);
   }
 
   if (typeof global !== "undefined") {
     global.Buffer = Buffer;
   }
 
+
   return (
     <Provider store={store}>
+       <PersistGate loading={null} persistor={persistor}>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <ThemeProvider
           value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
@@ -94,11 +96,11 @@ export default function RootLayout() {
               }}
             />
             {/* <Stack.Screen
-              name={ROUTES.walletImportOptions}
-              options={{
-                headerShown: false,
-              }}
-            /> */}
+                  name={ROUTES.walletImportOptions}
+                  options={{
+                    headerShown: false,
+                  }}
+                /> */}
             <Stack.Screen
               name={ROUTES.walletImportSeedPhrase}
               options={{
@@ -176,6 +178,7 @@ export default function RootLayout() {
           <StatusBar style="auto" />
         </ThemeProvider>
       </GestureHandlerRootView>
+      </PersistGate>
     </Provider>
   );
 }

@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Alert,
   ImageBackground,
+  Platform,
 } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import * as LocalAuthentication from "expo-local-authentication";
@@ -30,23 +31,64 @@ const Auth = () => {
           LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION
         )
       ) {
-        Alert.alert("Notice", "Face ID is not supported on this device.");
+        Alert.alert(
+          "Notice",
+          Platform.OS === "ios"
+            ? "Face ID is not supported on this device."
+            : "Face recognition is not supported on this device."
+        );
         return;
       }
+
+      const isEnrolled = await LocalAuthentication.isEnrolledAsync();
+      if (!isEnrolled) {
+        Alert.alert(
+          "Notice",
+          Platform.OS === "ios"
+            ? "Face ID is not set up. Please add Face ID in your device settings (Settings > Face ID & Passcode)."
+            : "Face recognition is not set up. Please add a face in your device settings (Settings > Security > Face Unlock)."
+        );
+        return;
+      }
+
       const result = await LocalAuthentication.authenticateAsync({
-        promptMessage: "Face Authentication",
+        promptMessage:
+          Platform.OS === "ios"
+            ? "Authenticate with Face ID"
+            : "Authenticate with Face Recognition",
         cancelLabel: "Cancel",
-        // fallbackLabel: "Use Passcode",
       });
+
       if (result.success) {
-        Alert.alert("Success!", "Authenticated using Face ID.");
+        Alert.alert(
+          "Success!",
+          Platform.OS === "ios"
+            ? "Authenticated successfully with Face ID."
+            : "Authenticated successfully with face recognition."
+        );
         router.replace("/(dashBoard)/home");
       } else {
-        Alert.alert("Error", result.error || "Face authentication failed.");
+        if (result.error === "not_enrolled") {
+          Alert.alert(
+            "Error",
+            Platform.OS === "ios"
+              ? "No Face ID data enrolled. Please set up Face ID in your device settings."
+              : "No face data enrolled. Please set up face recognition in your device settings."
+          );
+        } else if (result.error === "user_cancel") {
+          Alert.alert("Notice", "Authentication was canceled.");
+        } else if (result.error === "lockout") {
+          Alert.alert(
+            "Error",
+            "Biometric authentication is locked. Please unlock your device and try again."
+          );
+        } else {
+          Alert.alert("Error", result.error || "Face authentication failed.");
+        }
       }
     } catch (error) {
       console.error("Face Authentication Error:", error);
-      Alert.alert("Error", "An error occurred during Face ID authentication.");
+      Alert.alert("Error", "An error occurred during face authentication.");
     }
   };
 
@@ -65,6 +107,14 @@ const Auth = () => {
         );
         return;
       }
+      const isEnrolled = await LocalAuthentication.isEnrolledAsync();
+      if (!isEnrolled) {
+        Alert.alert(
+          "Notice",
+          "You have not registered fingerprint on this device. Please add fingerprint in the system settings (Settings > Security > Fingerprint) to use this feature."
+        );
+        return;
+      }
       const result = await LocalAuthentication.authenticateAsync({
         promptMessage: "Fingerprint Authentication",
         cancelLabel: "Cancel",
@@ -74,10 +124,17 @@ const Auth = () => {
         Alert.alert("Success!", "Authenticated using fingerprint.");
         router.replace("/(dashBoard)/home");
       } else {
-        Alert.alert(
-          "Error",
-          result.error || "Fingerprint authentication failed."
-        );
+        if (result.error === "not_enrolled") {
+          Alert.alert(
+            "Notice",
+            "You have not registered fingerprint on this device. Please add fingerprint in the system settings (Settings > Security > Fingerprint) to use this feature."
+          );
+        } else {
+          Alert.alert(
+            "Error",
+            result.error || "Fingerprint authentication failed."
+          );
+        }
       }
     } catch (error) {
       console.error("Fingerprint Authentication Error:", error);
@@ -90,6 +147,14 @@ const Auth = () => {
 
   const handleDevicePassAuth = async () => {
     try {
+      const isEnrolled = await LocalAuthentication.isEnrolledAsync();
+      if (!isEnrolled) {
+        Alert.alert(
+          "Notice",
+          "No device passcode is set up. Please set a passcode in your device settings (Settings > Touch ID & Passcode)."
+        );
+        return;
+      }
       const result = await LocalAuthentication.authenticateAsync({
         promptMessage: "Device Passcode Authentication",
         cancelLabel: "Cancel",
@@ -99,10 +164,24 @@ const Auth = () => {
         Alert.alert("Success!", "Authenticated using device passcode.");
         router.replace("/(dashBoard)/home");
       } else {
-        Alert.alert(
-          "Error",
-          result.error || "Device passcode authentication failed."
-        );
+        if (result.error === "not_enrolled") {
+          Alert.alert(
+            "Error",
+            "No device passcode is set up. Please set a passcode in your device settings."
+          );
+        } else if (result.error === "user_cancel") {
+          Alert.alert("Notice", "Authentication was canceled.");
+        } else if (result.error === "lockout") {
+          Alert.alert(
+            "Error",
+            "Authentication is locked. Please unlock your device and try again."
+          );
+        } else {
+          Alert.alert(
+            "Error",
+            result.error || "Device passcode authentication failed."
+          );
+        }
       }
     } catch (error) {
       console.error("Device Passcode Authentication Error:", error);

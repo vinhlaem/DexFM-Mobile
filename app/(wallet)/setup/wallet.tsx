@@ -2,10 +2,8 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import ethService from "@/services/ether";
-import solanaService from "@/services/solana";
 import { AddressState, GeneralStatus } from "@/types/types";
 import { saveEthereumAddresses } from "@/store/ethereumSlice";
-import { saveSolanaAddresses } from "@/store/solanaSlice";
 import { ROUTES } from "@/constants/routes";
 import * as SecureStore from "expo-secure-store";
 

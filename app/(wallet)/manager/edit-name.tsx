@@ -17,8 +17,12 @@ import { getNameShareAddress } from "@/utils/getNameCrypto";
 import { getLogo } from "@/utils/getLogoCrypto";
 import { updateAccountName } from "@/store/ethereumSlice";
 import { updateSolanaAccountName } from "@/store/solanaSlice";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Platform } from "react-native";
 
 const EditName = () => {
+  const insets = useSafeAreaInsets();
+  
   const ethereumAccounts = useSelector(
     (state: RootState) => state.ethereum.addresses
   );
@@ -54,7 +58,7 @@ const EditName = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
       {/* Header */}
       <View style={{ paddingHorizontal: 20 }}>
         <HeaderPage title="Edit Name" />

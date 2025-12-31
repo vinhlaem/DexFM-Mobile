@@ -14,13 +14,12 @@ import { IconSymbol } from "@/components/ui/IconSymbol";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import ethService from "@/services/ether";
-import solanaService from "@/services/solana";
 import { AddressState, GeneralStatus } from "@/types/types";
 import { saveEthereumAddresses } from "@/store/ethereumSlice";
-import { saveSolanaAddresses } from "@/store/solanaSlice";
 import { getPhrase } from "@/hooks/useStorageState";
 import { SplashScreen, useRouter } from "expo-router";
 import React from "react";
+import { saveSolanaAddresses, solanaService } from "@/store/solanaSlice";
 
 const OnBoarding = () => {
   const image = require("../assets/images/background.jpeg");

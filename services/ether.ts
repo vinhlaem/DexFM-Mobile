@@ -41,8 +41,11 @@ interface AssetTransferParams {
 
 class EthereumService {
   private provider: JsonRpcProvider;
-  private webSocketProvider: WebSocketProvider;
+  private webSocketProvider: WebSocketProvider | null = null;
   private alchemy: Alchemy;
+  private reconnectAttempts = 0;
+  private maxReconnectAttempts = 5;
+  private reconnectTimeout: NodeJS.Timeout | null = null;
 
   constructor(
     private apiKey: string,
@@ -50,14 +53,97 @@ class EthereumService {
     private socketUrl: string,
     private environment: string
   ) {
-    const network =
-      environment === "production" ? Network.ETH_MAINNET : Network.ETH_SEPOLIA;
-    this.provider = new JsonRpcProvider(ethUrl + apiKey);
-    this.webSocketProvider = new WebSocketProvider(socketUrl + apiKey);
+    const network = this.environment === "production" ? Network.ETH_MAINNET : Network.ETH_SEPOLIA;
+    this.provider = new JsonRpcProvider(this.ethUrl + this.apiKey);
+    this.initializeWebSocket();
     this.alchemy = new Alchemy({
-      apiKey: apiKey,
+      apiKey: this.apiKey,
       network: network,
     });
+  }
+
+  private async initializeWebSocket() {
+    try {
+      if (this.webSocketProvider) {
+        // Cleanup existing connection
+        this.webSocketProvider.removeAllListeners();
+        await this.webSocketProvider.destroy();
+      }
+
+      this.webSocketProvider = new WebSocketProvider(this.socketUrl + this.apiKey);
+
+      // Add connection handlers
+      this.webSocketProvider.on('error', this.handleWebSocketError.bind(this));
+      this.webSocketProvider.on('disconnect', this.handleDisconnect.bind(this));
+
+      // Wait for connection
+      await this.webSocketProvider.ready;
+      console.log('WebSocket connected successfully');
+      this.reconnectAttempts = 0;
+
+    } catch (error) {
+      console.error('WebSocket initialization error:', error);
+      this.handleWebSocketError(error);
+    }
+  }
+
+  private handleWebSocketError(error: any) {
+    console.error('WebSocket error:', error);
+    this.attemptReconnect();
+  }
+
+  private handleDisconnect() {
+    console.log('WebSocket disconnected');
+    this.attemptReconnect();
+  }
+
+  private attemptReconnect() {
+    if (this.reconnectAttempts >= this.maxReconnectAttempts) {
+      console.error('Max reconnection attempts reached');
+      return;
+    }
+
+    if (this.reconnectTimeout) {
+      clearTimeout(this.reconnectTimeout);
+    }
+
+    this.reconnectTimeout = setTimeout(() => {
+      this.reconnectAttempts++;
+      console.log(`Attempting to reconnect (${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
+      this.initializeWebSocket();
+    }, 5000 * Math.pow(2, this.reconnectAttempts)); // Exponential backoff
+  }
+
+  getWebSocketProvider(): WebSocketProvider | null {
+    if (!this.webSocketProvider) {
+      console.warn('WebSocket provider not initialized');
+      this.initializeWebSocket();
+      return null;
+    }
+
+    if (!this.webSocketProvider.ready) {
+      console.warn('WebSocket provider not ready');
+      return null;
+    }
+
+    return this.webSocketProvider;
+  }
+
+  // Method to explicitly close WebSocket connection
+  async closeWebSocket() {
+    if (this.webSocketProvider) {
+      try {
+        this.webSocketProvider.removeAllListeners();
+        await this.webSocketProvider.destroy();
+        this.webSocketProvider = null;
+        if (this.reconnectTimeout) {
+          clearTimeout(this.reconnectTimeout);
+          this.reconnectTimeout = null;
+        }
+      } catch (error) {
+        console.error('Error closing WebSocket:', error);
+      }
+    }
   }
 
   async createWallet(): Promise<HDNodeWallet> {
@@ -337,12 +423,14 @@ class EthereumService {
     }
   }
 
-  getWebSocketProvider() {
-    return this.webSocketProvider;
-  }
-
   getProvider() {
     return this.provider;
+  }
+
+  // Override destroy/cleanup method if needed
+  async destroy() {
+    await this.closeWebSocket();
+    // Cleanup other resources if needed
   }
 }
 

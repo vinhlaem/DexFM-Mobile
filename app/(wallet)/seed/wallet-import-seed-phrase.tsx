@@ -2,7 +2,6 @@ import {
   ActivityIndicator,
   ImageBackground,
   Keyboard,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -15,7 +14,6 @@ import { ThemedText } from "@/components/ThemedText";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store";
 import ethService from "@/services/ether";
-import solanaService from "@/services/solana";
 import { AddressState, GeneralStatus } from "@/types/types";
 import { savePhrase } from "@/hooks/useStorageState";
 import {
@@ -27,9 +25,9 @@ import {
   fetchSolanaBalance,
   fetchSolanaTransactions,
   saveSolanaAddresses,
+  solanaService,
 } from "@/store/solanaSlice";
 import { router } from "expo-router";
-import { ROUTES } from "@/constants/routes";
 import images from "@/constants/images";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 
@@ -40,7 +38,6 @@ const walletImportSeedPhrase = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [captions, setCaptions] = useState<string>("");
   const [title, setTitle] = useState<string>("");
-  const [isInputFocused, setInputFocused] = useState(false);
 
   const captionsArr: string[] = [
     "We're fetching your wallet details...",
@@ -82,8 +79,7 @@ const walletImportSeedPhrase = () => {
     const captionsInterval = setCaptionsInterval();
     setError("");
     try {
-      // Logic is needed to find the crypto currency with the highest amount of accounts created
-      // and using that index to create the same amount of addresses via hd wallets
+     
       let highestIndex = 0;
       const unusedEthIndex = await ethService.findNextUnusedWalletIndex(
         phraseTextValue
@@ -206,8 +202,7 @@ const walletImportSeedPhrase = () => {
               onChangeText={setTextValue}
               placeholder="Enter your seed phrase"
               placeholderTextColor="gray"
-              onFocus={() => setInputFocused(true)}
-              onEndEditing={() => setInputFocused(false)}
+             
               blurOnSubmit
               onSubmitEditing={() => Keyboard.dismiss()}
             />

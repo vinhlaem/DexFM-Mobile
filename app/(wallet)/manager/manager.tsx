@@ -1,8 +1,8 @@
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import React, { useMemo } from "react";
-import { Ionicons } from "@expo/vector-icons"; // Cần cài đặt @expo/vector-icons
+import { Ionicons } from "@expo/vector-icons"; 
 import { router } from "expo-router";
-import { useSafeAreaInsets } from "react-native-safe-area-context"; // Cần cài đặt
+import { useSafeAreaInsets } from "react-native-safe-area-context"; 
 import CustomImage from "@/components/ImageCustomer";
 import { RootState } from "@/store";
 import { useSelector } from "react-redux";

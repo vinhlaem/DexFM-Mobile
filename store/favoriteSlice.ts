@@ -9,21 +9,19 @@ export type Favorites = {
   token_address: string;
   chain_id: string; 
 };
-// Định nghĩa interface cho state của favorites
-interface FavoritesState {
-  favorites: Favorites[]; // Sử dụng kiểu Favorites thay vì string[]
+
+export interface FavoritesState {
+  favorites: Favorites[];
   status: GeneralStatus;
   error: string | null;
 }
 
-// Trạng thái ban đầu
 const initialState: FavoritesState = {
   favorites: [],
   status: GeneralStatus.Idle,
   error: null,
 };
 
-// Async thunk để tải danh sách yêu thích từ service
 export const loadFavorites = createAsyncThunk(
   "favorites/loadFavorites",
   async (_, { rejectWithValue }) => {
@@ -49,7 +47,6 @@ export const saveFavorites = createAsyncThunk(
   }
 );
 
-// Async thunk để xóa danh sách yêu thích
 export const clearFavorites = createAsyncThunk(
   "favorites/clearFavorites",
   async (_, { rejectWithValue }) => {
@@ -62,12 +59,10 @@ export const clearFavorites = createAsyncThunk(
   }
 );
 
-// Tạo slice cho favorites
 export const favoritesSlice = createSlice({
   name: "favorites",
   initialState,
   reducers: {
-    // Thêm một token vào danh sách yêu thích
     addFavorite: (state, action: PayloadAction<Favorites>) => {
       const exists = state.favorites.some(
         (fav) =>
@@ -78,7 +73,6 @@ export const favoritesSlice = createSlice({
         state.favorites.push(action.payload);
       }
     },
-    // Xóa một token khỏi danh sách yêu thích
     removeFavorite: (state, action: PayloadAction<Favorites>) => {
       state.favorites = state.favorites.filter(
         (fav) =>
@@ -88,7 +82,6 @@ export const favoritesSlice = createSlice({
           )
       );
     },
-    // Reset danh sách yêu thích
     resetFavorites: (state) => {
       state.favorites = [];
       state.status = GeneralStatus.Idle;
@@ -139,10 +132,8 @@ export const favoritesSlice = createSlice({
   },
 });
 
-// Xuất các action
 export const { addFavorite, removeFavorite, resetFavorites } = favoritesSlice.actions;
 
-// Selector để lấy danh sách yêu thích từ state
 export const selectFavorites = (state: RootState) => state.favorites.favorites;
 
 export default favoritesSlice.reducer;

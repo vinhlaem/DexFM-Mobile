@@ -46,17 +46,6 @@ export interface TransactionMetadata {
   transactions: Transaction[];
 }
 
-export interface AddressState {
-  accountName: string;
-  derivationPath: string;
-  address: string;
-  publicKey: string;
-  balance: number;
-  transactionMetadata?: TransactionMetadata;
-  failedNetworkRequest: boolean;
-  status: GeneralStatus;
-  transactionConfirmations: TransactionConfirmation[];
-}
 
 export interface WalletState {
   activeIndex: number;

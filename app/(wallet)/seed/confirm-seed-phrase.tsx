@@ -1,18 +1,15 @@
 import {
   ImageBackground,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-  Dimensions,
 } from "react-native";
 import React, { useState } from "react";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import Bubble from "@/components/ui/Bubble/Bubble";
-import { ROUTES } from "@/constants/routes";
 import { savePhrase } from "@/hooks/useStorageState";
 import * as Clipboard from "expo-clipboard";
 import images from "@/constants/images";
